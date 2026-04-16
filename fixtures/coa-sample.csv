@@ -1,0 +1,7 @@
+accountId,accountCode,name,description,type,normalSide,aliases
+exp-payroll-salary,5000,Payroll Salaries,Gross salary expense,expense,debit,gross pay|salary|earnings
+exp-payroll-tax,5400,Payroll Taxes,Employer payroll tax expense,expense,debit,employer tax|national insurance|social insurance
+exp-benefits,6100,Employee Benefits,Benefits expense,expense,debit,benefits|allowance|reimbursement
+liab-employee-tax,2210,Employee Tax Withholding,Employee payroll tax liability,liability,credit,withholding|employee tax|inss|lohnsteuer
+liab-net-pay,2220,Net Pay Liability,Net salary payable,liability,credit,net pay|salary payable|wages payable
+liab-payroll-clearing,2200,Payroll Clearing,Payroll clearing liability,liability,credit,clearing|payroll payable|bridge
