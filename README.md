@@ -1,120 +1,143 @@
 # DeelSorted
 
-DeelSorted is a planned AI-assisted payroll reconciliation tool for finance teams. The idea is simple: take a messy payroll export from Deel, match each line to the right general ledger account from a company's chart of accounts, and produce a clean journal entry that accounting can actually use.
+DeelSorted is a demo-first payroll reconciliation app. It takes a messy payroll export from Deel, matches each line to the right general ledger account from a company's chart of accounts, and turns the result into a clean journal entry that finance can review and export.
 
-## What DeelSorted is
+## What it does
 
-Deel payroll exports contain country-specific payroll codes that are hard for accounting teams to read. Examples:
+Deel payroll exports use payroll and tax labels that accountants usually do not work with directly. A few examples:
 
 - `UK_NI_Employer_Contribution_Tier_1`
 - `BR_INSS_Empregado`
 - `DE_Sozialversicherung_AG_Anteil`
 
-Finance teams usually need those lines translated into their own chart of accounts, such as:
+Accounting teams need those lines translated into the company's own chart of accounts, for example:
 
 - `GL 5400: Payroll Taxes`
 - `GL 6100: Employee Benefits`
 - `GL 2200: Payroll Liabilities`
 
-DeelSorted is meant to bridge that gap.
+DeelSorted is being built to do that translation faster, with clear reasoning and a clean review flow.
 
 ## Why this exists
 
-Today this work is often done by hand:
+Today this work is often manual:
 
-- Someone downloads payroll results from Deel
-- Someone reads through unfamiliar country-specific codes
-- Someone decides which GL account each line belongs to
-- Someone builds a journal entry manually
-- Someone checks whether it balances
+- someone downloads payroll data
+- someone reads unfamiliar country-specific codes
+- someone maps each line to a GL account
+- someone builds the journal entry
+- someone checks whether it balances
 
-That process is slow, repetitive, and easy to get wrong, especially when payroll runs cover multiple countries and currencies.
+That is slow, repetitive, and easy to get wrong, especially when payroll spans several countries and currencies.
 
-DeelSorted is being designed to make that process much faster while still keeping a human in the loop for anything uncertain.
+The goal of DeelSorted is to make the hard part easier without hiding uncertainty. When the app is confident, it should move quickly. When it is not, it should surface the line clearly and explain why it needs review.
 
-## How the demo is planned to work
+## How the demo is meant to work
 
-The first demo is intentionally narrow and easy to understand.
+The first demo is intentionally narrow.
 
 1. Upload one supported Deel-style payroll JSON file.
 2. Upload one supported chart of accounts CSV file.
 3. Click `Reconcile`.
-4. The system normalizes payroll codes into a cleaner internal form.
-5. The system finds the most likely GL account candidates.
-6. Gemini chooses the best match from those candidates and explains why.
-7. The app shows:
-   - mapped payroll lines
-   - confidence for each mapping
-   - anomaly lines that need review
-   - a balanced journal entry by currency
-8. The user downloads:
-   - a journal CSV
-   - an audit trail CSV
-9. Approved decisions can be reused in later runs.
+4. The app cleans up the payroll labels into a simpler internal form.
+5. The app finds the best account candidates.
+6. Gemini chooses the best match from those candidates and returns structured output.
+7. The app shows mapped lines, confidence, anomaly lines, and a balanced journal by currency.
+8. The user downloads a journal CSV and an audit trail CSV.
+9. Approved mapping decisions can be reused later.
 
-## What makes the product trustworthy
+## Why the design is trustworthy
 
-The important design choice is that AI is only used for the semantic matching step.
+AI is only used for the mapping decision.
 
 The rest stays deterministic:
 
 - file parsing
-- payroll code normalization
+- payroll label cleanup
 - journal building
 - debit and credit balancing
 - CSV generation
 - anomaly handling
 
-That means the AI helps with the hard language problem, while the accounting math stays fully controlled by the application.
+That split matters. The language problem is where AI helps. The accounting math stays under application control.
 
-## What is in this repository today
+## What is in the repo today
 
-This repository is currently in the planning stage. It does not contain the working app yet.
+This repo is no longer docs-only. It now contains:
 
-What it does contain:
-
-- an idea write-up
-- a detailed v1 spec
-- an implementation plan and task breakdown
-- a persistent project rules file for future coding sessions
+- the idea write-up
+- the v1 spec
+- the implementation plan
+- project rules in `AGENTS.md`
 - source-backed implementation notes
 - a project-specific TDD playbook
-- this README
+- a minimal Next.js App Router scaffold
+- a first Vitest test harness
+- a placeholder landing page
 
-## Current project documents
+The real reconciliation engine is not built yet. The current codebase is the starting point for that work.
 
-- Idea: [docs/ideas/deelsorted.md](docs/ideas/deelsorted.md)
-- Spec: [docs/specs/deelsorted-v1-demo-spec.md](docs/specs/deelsorted-v1-demo-spec.md)
-- Plan: [docs/specs/deelsorted-v1-demo-plan.md](docs/specs/deelsorted-v1-demo-plan.md)
-- Project rules: [AGENTS.md](AGENTS.md)
-- Source pack: [docs/references/deelsorted-source-pack.md](docs/references/deelsorted-source-pack.md)
-- TDD playbook: [docs/references/deelsorted-tdd-playbook.md](docs/references/deelsorted-tdd-playbook.md)
+## Current status
+
+Status today: planning is complete, the app scaffold is in place, and the first test setup is working.
+
+What is already done:
+
+- Next.js with TypeScript is set up
+- ESLint is set up
+- Vitest is set up
+- the app builds and serves locally in WSL
+- the workspace-root warning from the unrelated WSL `pnpm-lock.yaml` is handled in `next.config.ts`
+
+What comes next:
+
+- shared data shapes and validation
+- fixture payroll and chart of accounts files
+- reconciliation logic
+- mapping flow
+- journal building
+- exports and approvals
+
+## How to run the project
+
+From the repo root:
+
+```bash
+npm install
+npm run dev
+```
+
+Useful commands:
+
+- `npm run dev` starts the app
+- `npm run build` creates a production build
+- `npm run lint` checks the code style rules
+- `npm run typecheck` checks TypeScript
+- `npm run test` runs the Vitest suite
 
 ## Planned v1 scope
 
 The first version is meant to be a compelling demo, not a production accounting system.
 
-Planned scope:
+In scope:
 
 - one supported payroll JSON format
 - one supported COA CSV format
-- multi-country sample payroll data
+- sample payroll data for multiple countries
 - AI-assisted GL mapping
 - confidence scores and anomaly handling
 - balanced journal output by currency
 - downloadable CSV outputs
 - local reuse of approved mappings
 
-Not in v1:
+Out of scope for v1:
 
 - direct NetSuite, QuickBooks, or Workday integrations
-- database-backed multi-tenant storage
+- a multi-tenant database
 - broad support for every Deel export shape
 - automatic learning from unapproved decisions
 
-## Planned tech choices
-
-The current plan is:
+## Planned stack
 
 - Next.js with TypeScript for the app
 - Gemini for mapping decisions
@@ -123,36 +146,29 @@ The current plan is:
 - local file-based memory first
 - turbopuffer later, only after the core demo loop works well
 
-## Project principles
+## Project rules
 
-These are the rules guiding the build:
+These rules are guiding the build:
 
-- Keep the user experience simple.
-- Prefer one clean demo flow over broad feature coverage.
-- Let AI choose mappings, but not accounting math.
-- Keep uncertain lines visible instead of hiding them.
-- Reuse only decisions a human has approved.
-- Build the core engine first, then the UI, then polish.
+- keep the demo simple
+- prefer one strong flow over broad feature coverage
+- let AI choose mappings, but not accounting math
+- keep uncertain lines visible instead of hiding them
+- only reuse decisions a human has approved
+- build the engine first, then the UI, then polish
 
-## Repo status
+## Key project documents
 
-Status right now: planning complete, implementation not started.
-
-The next major step after this documentation phase is to scaffold the app, add fixtures and schemas, and build the reconciliation engine in small tested slices.
-
-## How we plan to build it
-
-The current implementation approach is intentionally disciplined:
-
-- use the spec and plan as the source of truth
-- keep a project rules file so future coding sessions start with the right constraints
-- check official docs before making framework-specific implementation choices
-- write tests for new behavior before writing the implementation
-- build in small slices instead of trying to land the whole app in one pass
+- Idea: [docs/ideas/deelsorted.md](docs/ideas/deelsorted.md)
+- Spec: [docs/specs/deelsorted-v1-demo-spec.md](docs/specs/deelsorted-v1-demo-spec.md)
+- Plan: [docs/specs/deelsorted-v1-demo-plan.md](docs/specs/deelsorted-v1-demo-plan.md)
+- Project rules: [AGENTS.md](AGENTS.md)
+- Source pack: [docs/references/deelsorted-source-pack.md](docs/references/deelsorted-source-pack.md)
+- TDD playbook: [docs/references/deelsorted-tdd-playbook.md](docs/references/deelsorted-tdd-playbook.md)
 
 ## Important notes
 
-- Do not use real payroll data in this repository.
+- Do not use real payroll data in this repo.
 - Do not commit secrets or API keys.
-- This project is currently documentation-first and demo-first.
-- The README should stay truthful as the project evolves. If the implementation changes direction, update the README along with the spec and plan.
+- This project is being built in small tested slices.
+- Keep the README in sync with the code, spec, and plan as the project moves forward.
