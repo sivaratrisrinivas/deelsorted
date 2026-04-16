@@ -76,6 +76,9 @@ What it does contain:
 - an idea write-up
 - a detailed v1 spec
 - an implementation plan and task breakdown
+- a persistent project rules file for future coding sessions
+- source-backed implementation notes
+- a project-specific TDD playbook
 - this README
 
 ## Current project documents
@@ -83,6 +86,9 @@ What it does contain:
 - Idea: [docs/ideas/deelsorted.md](docs/ideas/deelsorted.md)
 - Spec: [docs/specs/deelsorted-v1-demo-spec.md](docs/specs/deelsorted-v1-demo-spec.md)
 - Plan: [docs/specs/deelsorted-v1-demo-plan.md](docs/specs/deelsorted-v1-demo-plan.md)
+- Project rules: [AGENTS.md](AGENTS.md)
+- Source pack: [docs/references/deelsorted-source-pack.md](docs/references/deelsorted-source-pack.md)
+- TDD playbook: [docs/references/deelsorted-tdd-playbook.md](docs/references/deelsorted-tdd-playbook.md)
 
 ## Planned v1 scope
 
@@ -133,6 +139,16 @@ These are the rules guiding the build:
 Status right now: planning complete, implementation not started.
 
 The next major step after this documentation phase is to scaffold the app, add fixtures and schemas, and build the reconciliation engine in small tested slices.
+
+## How we plan to build it
+
+The current implementation approach is intentionally disciplined:
+
+- use the spec and plan as the source of truth
+- keep a project rules file so future coding sessions start with the right constraints
+- check official docs before making framework-specific implementation choices
+- write tests for new behavior before writing the implementation
+- build in small slices instead of trying to land the whole app in one pass
 
 ## Important notes
 
