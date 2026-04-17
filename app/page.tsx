@@ -51,9 +51,9 @@ export default function Home(): React.JSX.Element {
             color: "#4b5563",
           }}
         >
-          This slice opens the first browser-visible flow. Upload the supported
-          payroll JSON and COA CSV, submit them to the reconcile route, and get
-          a basic summary back from the headless engine.
+          Upload the supported payroll JSON and COA CSV, run reconciliation,
+          inspect mapped lines alongside anomalies, and export the journal and
+          audit trail CSVs from the browser.
         </p>
         <UploadForm />
       </section>

@@ -75,13 +75,13 @@ This repo is no longer docs-only. It now contains:
 - a working Vitest test harness
 - fixture-backed reconciliation domain logic
 - a server route for running reconciliation
-- a first browser upload flow with a basic results summary
+- a browser upload flow with mapped-line review, anomaly detail, and CSV downloads
 
-The demo is not feature-complete yet, but the headless reconciliation engine and the first browser-visible flow are now in place.
+The demo is not feature-complete yet, but the headless reconciliation engine and the current browser-visible review flow are now in place.
 
 ## Current status
 
-Status today: planning is complete, the headless reconcile engine is working against fixtures, and the first upload -> reconcile -> summary browser flow is wired up.
+Status today: planning is complete, the headless reconcile engine is working against fixtures, and the upload -> reconcile -> inspect -> download browser flow is wired up.
 
 What is already done:
 
@@ -91,14 +91,14 @@ What is already done:
 - the supported payroll JSON and COA CSV fixtures are in the repo
 - parsing, normalization, retrieval, Gemini orchestration, journal building, and audit export helpers are implemented
 - `/api/reconcile` accepts uploaded files and returns structured reconcile results
-- the home page lets you upload the supported files and view a basic summary
+- the home page lets you upload the supported files, review mapped lines, inspect anomalies, and download journal and audit trail CSVs
+- the results UI shows selected GL account, confidence, reasoning, and whether a mapping came from the model or approved memory
+- an integration test covers the results rendering and CSV download markup
 - the app builds and serves locally in WSL
 - the workspace-root warning from the unrelated WSL `pnpm-lock.yaml` is handled in `next.config.ts`
 
 What comes next:
 
-- richer result rendering
-- CSV download actions
 - approval persistence in the UI flow
 - hardening and closeout docs
 
@@ -127,16 +127,18 @@ Useful commands:
 
 ## Current demo flow
 
-Today the local demo supports this first browser-visible slice:
+Today the local demo supports this browser-visible slice:
 
 1. Start the app with `npm run dev`.
 2. Open `http://localhost:3000`.
 3. Upload `fixtures/payroll-sample.json`.
 4. Upload `fixtures/coa-sample.csv`.
 5. Click `Reconcile`.
-6. Review the returned summary for processed lines, mapped lines, anomalies, journal rows, audit rows, and currencies.
+6. Review the selected GL account, confidence, journal role, and reasoning for each mapped line.
+7. Review anomalies in a separate panel with a human-readable reason.
+8. Download the journal CSV and audit trail CSV for the completed run.
 
-The route currently depends on a server-side Gemini API key and returns structured JSON that the browser renders into a minimal summary view.
+The route currently depends on a server-side Gemini API key and returns structured JSON that the browser renders into the review and export UI.
 
 ## Planned v1 scope
 

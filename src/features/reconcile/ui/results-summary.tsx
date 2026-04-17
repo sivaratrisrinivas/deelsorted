@@ -2,8 +2,12 @@ import type {
   AnomalousPayrollLine,
   AuditTrailRow,
   JournalRow,
+  MappedPayrollLine,
   ReconciledPayrollLine,
 } from "../../../types/reconcile";
+import { AnomalyPanel } from "./anomaly-panel";
+import { DownloadActions } from "./download-actions";
+import { ResultsTable } from "./results-table";
 
 export type ReconcileResultPayload = {
   reconciledLines: ReconciledPayrollLine[];
@@ -19,7 +23,12 @@ type ResultsSummaryProps = {
 export function ResultsSummary({
   result,
 }: ResultsSummaryProps): React.JSX.Element {
-  const mappedCount = result.reconciledLines.length - result.anomalies.length;
+  const mappedLines = result.reconciledLines.filter(
+    (line): line is MappedPayrollLine => line.status === "mapped",
+  );
+  const anomalyLines = result.reconciledLines.filter(
+    (line): line is AnomalousPayrollLine => line.status === "anomaly",
+  );
   const currencies = [...new Set(result.journalRows.map((row) => row.currency))];
 
   return (
@@ -66,9 +75,9 @@ export function ResultsSummary({
             lineHeight: 1.7,
           }}
         >
-          This slice keeps the browser flow intentionally lean: you can upload
-          the supported files, run reconciliation, and confirm the engine
-          produced mapped lines, anomaly counts, and journal output.
+          Review the selected account on each mapped line, keep anomalies in a
+          separate review lane, and download both CSV outputs from the completed
+          run.
         </p>
       </div>
 
@@ -80,8 +89,8 @@ export function ResultsSummary({
         }}
       >
         <SummaryStat label="Lines processed" value={String(result.reconciledLines.length)} />
-        <SummaryStat label="Mapped lines" value={String(mappedCount)} />
-        <SummaryStat label="Anomalies" value={String(result.anomalies.length)} />
+        <SummaryStat label="Mapped lines" value={String(mappedLines.length)} />
+        <SummaryStat label="Anomalies" value={String(anomalyLines.length)} />
         <SummaryStat label="Journal rows" value={String(result.journalRows.length)} />
         <SummaryStat label="Audit rows" value={String(result.auditTrailRows.length)} />
         <SummaryStat
@@ -89,6 +98,13 @@ export function ResultsSummary({
           value={currencies.length > 0 ? currencies.join(", ") : "None"}
         />
       </div>
+
+      <DownloadActions
+        auditTrailRows={result.auditTrailRows}
+        journalRows={result.journalRows}
+      />
+      <ResultsTable lines={mappedLines} />
+      <AnomalyPanel anomalies={anomalyLines} />
     </section>
   );
 }
