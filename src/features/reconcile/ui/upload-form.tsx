@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { ErrorState } from "./error-state";
+import { LoadingState } from "./loading-state";
 import {
   ResultsSummary,
   type ReconcileResultPayload,
@@ -21,6 +23,7 @@ export function UploadForm(): React.JSX.Element {
     event.preventDefault();
 
     setErrorMessage(null);
+    setResult(null);
     setIsSubmitting(true);
 
     try {
@@ -109,24 +112,64 @@ export function UploadForm(): React.JSX.Element {
             Server-side reconciliation requires <code>GEMINI_API_KEY</code> or{" "}
             <code>GOOGLE_API_KEY</code> in the environment.
           </p>
-          {errorMessage ? (
-            <p
-              role="alert"
-              style={{
-                margin: 0,
-                borderRadius: "16px",
-                padding: "0.9rem 1rem",
-                background: "rgba(185, 28, 28, 0.08)",
-                color: "#991b1b",
-              }}
-            >
-              {errorMessage}
-            </p>
-          ) : null}
         </div>
       </form>
 
-      {result ? <ResultsSummary result={result} /> : null}
+      <div
+        style={{
+          marginTop: "1.5rem",
+        }}
+      >
+        {isSubmitting ? <LoadingState /> : null}
+        {!isSubmitting && errorMessage ? <ErrorState message={errorMessage} /> : null}
+        {!isSubmitting && !errorMessage && result ? (
+          <ResultsSummary result={result} />
+        ) : null}
+        {!isSubmitting && !errorMessage && !result ? (
+          <section
+            style={{
+              borderRadius: "22px",
+              border: "1px solid rgba(124, 92, 59, 0.16)",
+              background: "rgba(255, 255, 255, 0.68)",
+              padding: "1.25rem",
+            }}
+          >
+            <p
+              style={{
+                marginTop: 0,
+                marginBottom: "0.45rem",
+                fontSize: "0.85rem",
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                color: "#8b6a45",
+              }}
+            >
+              Ready for the demo flow
+            </p>
+            <h2
+              style={{
+                marginTop: 0,
+                marginBottom: "0.55rem",
+                fontSize: "1.25rem",
+                color: "#1f2937",
+              }}
+            >
+              Upload the supported files to begin.
+            </h2>
+            <p
+              style={{
+                margin: 0,
+                lineHeight: 1.7,
+                color: "#4b5563",
+              }}
+            >
+              Choose one Deel-style payroll JSON file and one chart-of-accounts
+              CSV file, then run reconciliation to populate mapped lines,
+              anomalies, and both export downloads.
+            </p>
+          </section>
+        ) : null}
+      </div>
     </div>
   );
 }
