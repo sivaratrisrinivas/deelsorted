@@ -2,8 +2,8 @@
 
 ## Status
 - Planning is complete.
-- Implementation is in progress through Task 10.
-- Tasks 1 through 10 are implemented. Task 11 and Task 12 remain.
+- Implementation is in progress through Task 11.
+- Tasks 1 through 11 are implemented. Task 12 remains.
 - The current source of truth is the repository docs plus the checked-in application code and tests.
 
 ## What We Are Building
@@ -173,7 +173,8 @@ Follow the approved plan:
 
 Progress today:
 - Steps 1 through 8 are implemented in the repo.
-- Remaining planned work is hardening and closeout docs unless the user redirects scope.
+- Task 11 hardening is now implemented in the repo.
+- Remaining planned work is closeout docs and final verification unless the user redirects scope.
 
 ## Success Markers
 The v1 demo is successful when:

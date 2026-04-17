@@ -78,11 +78,11 @@ This repo is no longer docs-only. It now contains:
 - a server route for saving approved mappings
 - a browser upload flow with mapped-line review, anomaly detail, CSV downloads, and approval actions
 
-The core demo loop is now in place through approval persistence. Hardening and closeout work still remain.
+The core demo loop is now in place through Task 11 hardening. Closeout docs and final verification still remain.
 
 ## Current status
 
-Status today: planning is complete, Tasks 1 through 10 are implemented, and the upload -> reconcile -> inspect -> download -> approve browser flow is wired up.
+Status today: planning is complete, Tasks 1 through 11 are implemented, and the upload -> reconcile -> inspect -> download -> approve browser flow is wired up with explicit ready, loading, and error states.
 
 What is already done:
 
@@ -94,16 +94,17 @@ What is already done:
 - `/api/reconcile` accepts uploaded files and returns structured reconcile results
 - `/api/approvals` persists confirmed mappings to local JSON storage
 - the home page lets you upload the supported files, review mapped lines, inspect anomalies, download journal and audit trail CSVs, and approve confirmed mappings
+- malformed or unsupported uploads fail with clear recoverable error messages instead of leaving the UI in an ambiguous state
+- the reconcile form now shows explicit ready, loading, and stopped-safe error states during submission
 - the results UI shows selected GL account, confidence, reasoning, and whether a mapping came from the model or approved memory
 - approving a mapped line stores it for future reruns of the same normalized concept
-- integration tests cover the results rendering, local approval persistence, and approved-memory reuse flow
+- integration tests cover the results rendering, local approval persistence, approved-memory reuse flow, and invalid upload error states
 - the app builds and serves locally in WSL
 - the workspace-root warning from the unrelated WSL `pnpm-lock.yaml` is handled in `next.config.ts`
 
 What comes next:
 
-- invalid-input and model-failure hardening
-- hardening and closeout docs
+- developer-doc sync and final verification for Task 12
 
 ## How to run the project
 
@@ -143,7 +144,7 @@ Today the local demo supports this browser-visible slice:
 9. Approve any mapped line you want to reuse later.
 10. Rerun reconciliation and see reused decisions marked as `Approved memory`.
 
-The route currently depends on a server-side Gemini API key and returns structured JSON that the browser renders into the review and export UI.
+The route currently depends on a server-side Gemini API key and returns structured JSON that the browser renders into the review and export UI. If an upload is missing, malformed, or unsupported, the app now keeps the page usable and shows a clear error state instead of stale results.
 
 ## Planned v1 scope
 
