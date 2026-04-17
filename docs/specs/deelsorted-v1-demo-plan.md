@@ -110,7 +110,7 @@ Project scaffold and toolchain
 - [ ] Schema validation tests confirm the sample fixture payloads conform to the expected shapes.
 
 **Verification:**
-- [ ] Tests pass: `npm run test -- --grep "schema|fixture"`
+- [ ] Tests pass: `npm run test -- tests/unit/schemas-and-fixtures.test.ts`
 - [ ] Typecheck succeeds: `npm run typecheck`
 - [ ] Manual check: inspect the fixture files and confirm they match the v1 spec assumptions
 
@@ -135,7 +135,7 @@ Project scaffold and toolchain
 - [ ] Normalization derives a stable `normalizedCode` and token set for repeated concept grouping.
 
 **Verification:**
-- [ ] Tests pass: `npm run test -- --grep "parser|normalize"`
+- [ ] Tests pass: `npm run test -- tests/unit/parsers.test.ts tests/unit/normalize.test.ts`
 - [ ] Typecheck succeeds: `npm run typecheck`
 - [ ] Manual check: run parsers against fixtures and inspect parsed output in a test snapshot or debug output
 
@@ -160,7 +160,7 @@ Project scaffold and toolchain
 - [ ] Journal and audit trail CSV helpers produce stable, testable output strings or blobs.
 
 **Verification:**
-- [ ] Tests pass: `npm run test -- --grep "journal|export"`
+- [ ] Tests pass: `npm run test -- tests/unit/journal.test.ts tests/unit/export.test.ts`
 - [ ] Typecheck succeeds: `npm run typecheck`
 - [ ] Manual check: inspect generated CSV output from fixture-backed tests
 
@@ -194,7 +194,7 @@ Project scaffold and toolchain
 - [ ] A local memory adapter can read approved mappings from a JSON file shaped by the shared schemas.
 
 **Verification:**
-- [ ] Tests pass: `npm run test -- --grep "retrieval|memory"`
+- [ ] Tests pass: `npm run test -- tests/integration/retrieval-and-memory.test.ts`
 - [ ] Typecheck succeeds: `npm run typecheck`
 - [ ] Manual check: inspect candidate shortlists for a few fixture payroll concepts in test output
 
@@ -218,7 +218,7 @@ Project scaffold and toolchain
 - [ ] Low-confidence, invalid, or `NO_MATCH` decisions are quarantined as anomalies instead of crashing the flow.
 
 **Verification:**
-- [ ] Tests pass: `npm run test -- --grep "reconcile|gemini"`
+- [ ] Tests pass: `npm run test -- tests/integration/reconcile-service.test.ts tests/integration/gemini-adapter.test.ts`
 - [ ] Typecheck succeeds: `npm run typecheck`
 - [ ] Manual check: run fixture-backed integration tests with a mocked Gemini client and inspect the resulting mapped and anomaly lines
 
@@ -254,7 +254,7 @@ Project scaffold and toolchain
 - [ ] The browser renders a basic results view instead of only logging data.
 
 **Verification:**
-- [ ] Tests pass: `npm run test -- --grep "route|upload"`
+- [ ] Tests pass: `npm run test -- tests/integration/reconcile-route.test.ts`
 - [ ] Build succeeds: `npm run build`
 - [ ] Manual check: run `npm run dev`, upload the fixture files, and confirm the result page loads
 
@@ -279,7 +279,7 @@ Project scaffold and toolchain
 - [ ] The user can download both journal CSV and audit trail CSV from the browser.
 
 **Verification:**
-- [ ] Tests pass: `npm run test -- --grep "results|download|anomaly"`
+- [ ] Tests pass: `npm run test -- tests/integration/results-and-downloads.test.ts`
 - [ ] Build succeeds: `npm run build`
 - [ ] Manual check: run the flow in the browser and verify both CSV files download correctly
 
@@ -304,7 +304,7 @@ Project scaffold and toolchain
 - [ ] A later reconcile run reuses the approved mapping when the normalized concept matches.
 
 **Verification:**
-- [ ] Tests pass: `npm run test -- --grep "approval|memory"`
+- [ ] Tests pass: `npm run test -- tests/integration/approval-flow.test.ts`
 - [ ] Build succeeds: `npm run build`
 - [ ] Manual check: approve a mapping, rerun reconciliation, and confirm the approved mapping is reused
 
@@ -339,7 +339,7 @@ Project scaffold and toolchain
 - [ ] Loading and empty states are present so the flow never looks broken or ambiguous.
 
 **Verification:**
-- [ ] Tests pass: `npm run test -- --grep "error|invalid|loading"`
+- [ ] Tests pass: `npm run test -- tests/integration/error-states.test.ts`
 - [ ] Build succeeds: `npm run build`
 - [ ] Manual check: simulate at least one bad input and one invalid model response and verify the UI stays usable
 
