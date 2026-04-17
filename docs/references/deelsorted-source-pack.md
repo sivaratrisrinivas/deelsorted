@@ -1,23 +1,24 @@
 # DeelSorted Source Pack
 
 ## Purpose
-This document captures the official documentation we should rely on when implementation starts. It is a pre-implementation reference, not a substitute for re-checking the docs once the actual dependencies are pinned in `package.json`.
+This document captures the official documentation and implementation notes we should rely on while maintaining the current repo. It started as a pre-implementation reference, but the repository is now scaffolded and running, so `package.json`, the checked-in source, and the docs in `README.md` and `docs/specs/` are the current source of truth.
 
 ## Stack Detection Status
-- No `package.json` exists in the repository yet.
-- That means exact framework and library versions are not pinned yet.
-- The planned stack comes from the approved spec, not from installed dependencies:
-  - Next.js App Router
-  - TypeScript
-  - React
-  - Zod
-  - `@google/genai`
-  - Vitest
-  - Papa Parse
+- `package.json` is now present and pins the current runtime stack.
+- The checked-in repo currently uses:
+  - Next.js `16.2.4`
+  - React `19.2.4`
+  - TypeScript `^5`
+  - Zod `^4.3.6`
+  - Vitest `^3.2.4`
+  - Papa Parse `^5.5.3`
+- Important implementation note:
+  - The approved spec originally named `@google/genai`, but the current repo does not install that package yet.
+  - The runtime Gemini integration is a thin server-side Developer API client in `src/features/reconcile/server/runtime.ts` that feeds the schema-validated mapping adapter in `src/features/reconcile/server/gemini.ts`.
 
 Important:
-- Anything below that depends on an exact package version should be treated as "verified against current official docs, but not yet pinned to this repo."
-- Once Task 1 and Task 2 from the implementation plan are complete, re-run a source-driven pass against the actual dependency versions.
+- When this document disagrees with `package.json` or checked-in source, prefer the repo.
+- Keep the source links below as the maintenance reference for future framework-specific changes.
 
 ## Verified Implementation Guidance
 
@@ -100,12 +101,13 @@ Sources:
 - https://ai.google.dev/gemini-api/docs/structured-output
 - https://ai.google.dev/gemini-api/docs/quickstart
 
-### 7. Use the Gemini JavaScript SDK, not hand-written HTTP requests
+### 7. Preferred future direction: adopt the Gemini JavaScript SDK instead of the current thin HTTP client
 Current Gemini quickstart docs show JavaScript usage through `@google/genai`.
 
 Why this matters for DeelSorted:
-- It matches the approved stack.
-- It reduces the chance of making undocumented request-shape mistakes.
+- It still matches the approved stack direction in the spec.
+- It would reduce the chance of request-shape drift versus the current handwritten runtime client.
+- This is a follow-up alignment task, not a hidden requirement for the current demo loop, because the checked-in fetch-based client is already covered by tests and schema validation.
 
 Source:
 - https://ai.google.dev/gemini-api/docs/quickstart
@@ -177,16 +179,16 @@ These are the implementation choices currently best supported by official docs a
 7. Use mocked Gemini responses in Vitest from the start.
 
 ## Things We Should Not Pretend Are Settled Yet
-- The exact React version and whether `useActionState` should become the standard form pattern in this repo.
-- The exact Next.js version and whether any APIs differ from the current docs once the scaffold is created.
+- Whether `useActionState` should become the standard form pattern in this repo, even though React is now pinned.
+- Whether future Next.js upgrades should change any of the current route-handler or upload-flow patterns.
 - Whether the upload flow should use direct form submission with `FormData` or client-side parsing plus fetch.
 - Any turbopuffer-specific implementation details, because turbopuffer is intentionally not on the critical path for the first demo loop.
 
 ## Re-Check Triggers
 Run another source-driven pass when any of these become true:
-- `package.json` exists
-- Task 1 starts
-- Task 6 starts and retrieval becomes an active implementation concern
+- we adopt `@google/genai` or another Gemini client library
+- we upgrade Next.js, React, Vitest, Zod, or Papa Parse materially
+- retrieval moves beyond the local adapter
 - we introduce any new framework-specific dependency
 
 ## Source Index

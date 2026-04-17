@@ -78,11 +78,11 @@ This repo is no longer docs-only. It now contains:
 - a server route for saving approved mappings
 - a browser upload flow with mapped-line review, anomaly detail, CSV downloads, and approval actions
 
-The core demo loop is now in place through Task 11 hardening. Closeout docs and final verification still remain.
+The core demo loop is now in place through Task 12 closeout, with the final verification snapshot recorded below.
 
 ## Current status
 
-Status today: planning is complete, Tasks 1 through 11 are implemented, and the upload -> reconcile -> inspect -> download -> approve browser flow is wired up with explicit ready, loading, and error states.
+Status today: planning is complete, Tasks 1 through 12 are implemented, and the upload -> reconcile -> inspect -> download -> approve browser flow is wired up with explicit ready, loading, and error states.
 
 What is already done:
 
@@ -102,30 +102,39 @@ What is already done:
 - the app builds and serves locally in WSL
 - the workspace-root warning from the unrelated WSL `pnpm-lock.yaml` is handled in `next.config.ts`
 
-What comes next:
-
-- developer-doc sync and final verification for Task 12
-
 ## How to run the project
 
-From the repo root:
+Run every command from a WSL shell rooted at this repository:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Before running the Gemini-backed flow locally, create `.env.local` in the repo root with:
+Before running the Gemini-backed flow locally, create `.env.local` in the repo root with either:
 
 ```bash
 GEMINI_API_KEY=your_key_here
 ```
 
+or:
+
+```bash
+GOOGLE_API_KEY=your_key_here
+```
+
+Demo fixtures for the supported v1 upload flow live at:
+
+- `fixtures/payroll-sample.json`
+- `fixtures/coa-sample.csv`
+
+Fixture field details are documented in `fixtures/README.md`.
+
 Useful commands:
 
 - `npm run dev` starts the app
 - `npm run build` creates a production build
-- `npm run lint` checks the code style rules
+- `npm run lint` checks the code style rules through the WSL-safe runner in `scripts/run-eslint.mjs`
 - `npm run typecheck` checks TypeScript
 - `npm run test` runs the Vitest suite
 
@@ -145,6 +154,21 @@ Today the local demo supports this browser-visible slice:
 10. Rerun reconciliation and see reused decisions marked as `Approved memory`.
 
 The route currently depends on a server-side Gemini API key and returns structured JSON that the browser renders into the review and export UI. If an upload is missing, malformed, or unsupported, the app now keeps the page usable and shows a clear error state instead of stale results.
+
+## Current implementation note
+
+The checked-in Gemini runtime uses a small server-side Developer API client in `src/features/reconcile/server/runtime.ts` and passes its responses through the schema-validated mapping adapter in `src/features/reconcile/server/gemini.ts`. The approved spec still tracks `@google/genai` as the preferred SDK direction, but that package is not a current repository dependency.
+
+## Verification snapshot
+
+Final closeout verification is recorded from a WSL bash shell in this repository.
+
+- Date: `2026-04-18`
+- `npm run build` passed
+- `npm run lint` passed
+- `npm run typecheck` passed
+- `npm run test` passed with `13` test files and `27` tests green
+- Manual run check: `npm run dev -- --hostname 127.0.0.1 --port 3001` reached a ready Next.js server at `http://127.0.0.1:3001` in `2.7s`
 
 ## Planned v1 scope
 

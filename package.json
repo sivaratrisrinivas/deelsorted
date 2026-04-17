@@ -7,7 +7,7 @@
     "dev:turbopack": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
+    "lint": "node scripts/run-eslint.mjs",
     "test": "TMPDIR=/tmp vitest run",
     "typecheck": "tsc --noEmit"
   },

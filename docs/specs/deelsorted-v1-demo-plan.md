@@ -3,6 +3,11 @@
 ## Overview
 This plan turns the approved DeelSorted v1 spec into a small, ordered set of implementation tasks. The goal is to ship one compelling demo flow: upload a supported Deel-style payroll JSON file and a COA CSV file, run a constrained AI-assisted reconciliation, review mapped lines and anomalies, and download balanced journal and audit CSVs. The plan deliberately avoids production concerns like databases, ERP integrations, or turbopuffer as a launch dependency.
 
+## Progress Snapshot
+- As of `2026-04-18`, Tasks 1 through 12 are implemented in the checked-in repository.
+- Final WSL verification for Task 12 is recorded in `README.md`.
+- The checkboxes below are the original planning checklist and were not backfilled as earlier slices landed.
+
 ## Architecture Decisions
 - Start with a local retrieval adapter and local approved-mapping persistence instead of turbopuffer so the first end-to-end loop is fast to build and easy to debug.
 - Keep the reconciliation domain pure and deterministic. Parsing, normalization, journal building, and CSV generation stay outside the UI and outside the Gemini adapter.
@@ -378,6 +383,8 @@ Project scaffold and toolchain
 - `docs/specs/deelsorted-v1-demo-plan.md`
 
 **Estimated scope:** Small: 1-2 files plus verification
+
+**Closeout note:** Final local command verification for this task is recorded in `README.md`.
 
 ### Checkpoint: Complete
 - [ ] All spec success criteria are satisfied

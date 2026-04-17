@@ -30,14 +30,14 @@ Success for the demo means the product visibly transforms unfamiliar payroll cod
 - Framework: Next.js App Router, TypeScript
 - UI: React
 - Schema validation: Zod
-- LLM SDK: `@google/genai`
+- LLM integration: Gemini behind a server-side client abstraction; `@google/genai` remains the planned SDK target, but the current repo uses a thin Developer API client in `src/features/reconcile/server/runtime.ts`
 - Testing: Vitest
 - CSV parsing: Papa Parse
 - Storage for v1 memory: local JSON file in the repository or app data directory
 - Retrieval architecture: pluggable interface with a local in-memory adapter first; turbopuffer adapter planned after the first demo loop proves out
 
 ## Commands
-These are the target project commands the repo should standardize on once scaffolded:
+These are the current project commands:
 
 - Install: `npm install`
 - Dev: `npm run dev`
@@ -58,7 +58,7 @@ src/lib/parsers/             -> Deel payroll JSON parser and COA CSV parser
 src/lib/env/                 -> Environment variable validation
 src/types/                   -> Shared TypeScript types and Zod schemas
 data/                        -> Local persisted approved mappings for demo use
-fixtures/                    -> Demo payroll JSON, COA CSV, and expected-output fixtures
+fixtures/                    -> Demo payroll JSON and COA CSV fixtures used by the supported v1 flow
 tests/unit/                  -> Pure function tests for parsers, normalization, journal logic
 tests/integration/           -> Reconcile pipeline tests with mocked Gemini responses
 docs/ideas/                  -> Idea refinement artifacts
