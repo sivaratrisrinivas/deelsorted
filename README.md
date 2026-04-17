@@ -72,31 +72,35 @@ This repo is no longer docs-only. It now contains:
 - source-backed implementation notes
 - a project-specific TDD playbook
 - a minimal Next.js App Router scaffold
-- a first Vitest test harness
-- a placeholder landing page
+- a working Vitest test harness
+- fixture-backed reconciliation domain logic
+- a server route for running reconciliation
+- a first browser upload flow with a basic results summary
 
-The real reconciliation engine is not built yet. The current codebase is the starting point for that work.
+The demo is not feature-complete yet, but the headless reconciliation engine and the first browser-visible flow are now in place.
 
 ## Current status
 
-Status today: planning is complete, the app scaffold is in place, and the first test setup is working.
+Status today: planning is complete, the headless reconcile engine is working against fixtures, and the first upload -> reconcile -> summary browser flow is wired up.
 
 What is already done:
 
 - Next.js with TypeScript is set up
 - ESLint is set up
 - Vitest is set up
+- the supported payroll JSON and COA CSV fixtures are in the repo
+- parsing, normalization, retrieval, Gemini orchestration, journal building, and audit export helpers are implemented
+- `/api/reconcile` accepts uploaded files and returns structured reconcile results
+- the home page lets you upload the supported files and view a basic summary
 - the app builds and serves locally in WSL
 - the workspace-root warning from the unrelated WSL `pnpm-lock.yaml` is handled in `next.config.ts`
 
 What comes next:
 
-- shared data shapes and validation
-- fixture payroll and chart of accounts files
-- reconciliation logic
-- mapping flow
-- journal building
-- exports and approvals
+- richer result rendering
+- CSV download actions
+- approval persistence in the UI flow
+- hardening and closeout docs
 
 ## How to run the project
 
@@ -107,6 +111,12 @@ npm install
 npm run dev
 ```
 
+Before running the Gemini-backed flow locally, create `.env.local` in the repo root with:
+
+```bash
+GEMINI_API_KEY=your_key_here
+```
+
 Useful commands:
 
 - `npm run dev` starts the app
@@ -114,6 +124,19 @@ Useful commands:
 - `npm run lint` checks the code style rules
 - `npm run typecheck` checks TypeScript
 - `npm run test` runs the Vitest suite
+
+## Current demo flow
+
+Today the local demo supports this first browser-visible slice:
+
+1. Start the app with `npm run dev`.
+2. Open `http://localhost:3000`.
+3. Upload `fixtures/payroll-sample.json`.
+4. Upload `fixtures/coa-sample.csv`.
+5. Click `Reconcile`.
+6. Review the returned summary for processed lines, mapped lines, anomalies, journal rows, audit rows, and currencies.
+
+The route currently depends on a server-side Gemini API key and returns structured JSON that the browser renders into a minimal summary view.
 
 ## Planned v1 scope
 

@@ -1,3 +1,5 @@
+import { UploadForm } from "@/src/features/reconcile/ui/upload-form";
+
 export default function Home(): React.JSX.Element {
   return (
     <main
@@ -49,10 +51,11 @@ export default function Home(): React.JSX.Element {
             color: "#4b5563",
           }}
         >
-          The app scaffold and test harness are now in place. The next
-          implementation slice will start building the reconciliation engine in
-          small, verified steps.
+          This slice opens the first browser-visible flow. Upload the supported
+          payroll JSON and COA CSV, submit them to the reconcile route, and get
+          a basic summary back from the headless engine.
         </p>
+        <UploadForm />
       </section>
     </main>
   );
