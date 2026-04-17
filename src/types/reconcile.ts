@@ -79,6 +79,8 @@ export const PayrollLineSchema = z.object({
 
 export const ConfidenceBandSchema = z.enum(["low", "medium", "high"]);
 export const JournalRoleSchema = z.enum(["expense", "liability"]);
+export const MappingSourceSchema = z.enum(["model", "memory"]);
+export const ReconcileLineStatusSchema = z.enum(["mapped", "anomaly"]);
 
 export const MappingDecisionSchema = z.object({
   normalizedCode: NonEmptyStringSchema,
@@ -89,7 +91,7 @@ export const MappingDecisionSchema = z.object({
   confidenceBand: ConfidenceBandSchema,
   reasoning: NonEmptyStringSchema,
   journalRole: JournalRoleSchema,
-  source: z.enum(["model", "memory"]).default("model"),
+  source: MappingSourceSchema.default("model"),
 });
 
 export const AnomalyReasonCodeSchema = z.enum([
@@ -118,6 +120,50 @@ export const JournalRowSchema = z.object({
   memo: NonEmptyStringSchema,
 });
 
+export const MappedPayrollLineSchema = PayrollLineSchema.extend({
+  status: z.literal("mapped"),
+  selectedAccountId: NonEmptyStringSchema,
+  selectedAccountCode: NonEmptyStringSchema,
+  selectedAccountName: NonEmptyStringSchema,
+  confidenceScore: z.number().min(0).max(1),
+  confidenceBand: ConfidenceBandSchema,
+  reasoning: NonEmptyStringSchema,
+  journalRole: JournalRoleSchema,
+  mappingSource: MappingSourceSchema,
+});
+
+export const AnomalousPayrollLineSchema = PayrollLineSchema.extend({
+  status: z.literal("anomaly"),
+  reasonCode: AnomalyReasonCodeSchema,
+  reasoning: NonEmptyStringSchema,
+  confidenceScore: z.number().min(0).max(1).optional(),
+  confidenceBand: ConfidenceBandSchema.optional(),
+});
+
+export const ReconciledPayrollLineSchema = z.discriminatedUnion("status", [
+  MappedPayrollLineSchema,
+  AnomalousPayrollLineSchema,
+]);
+
+export const AuditTrailRowSchema = z.object({
+  lineId: NonEmptyStringSchema,
+  sourceRef: NonEmptyStringSchema,
+  countryCode: CountryCodeSchema,
+  currency: CurrencyCodeSchema,
+  rawCode: NonEmptyStringSchema,
+  rawLabel: NonEmptyStringSchema,
+  normalizedCode: NonEmptyStringSchema,
+  amount: z.number().finite(),
+  status: ReconcileLineStatusSchema,
+  selectedAccountCode: z.string(),
+  selectedAccountName: z.string(),
+  journalRole: z.string(),
+  confidenceScore: z.number().min(0).max(1).optional(),
+  confidenceBand: z.string().optional(),
+  reasoning: NonEmptyStringSchema,
+  anomalyReasonCode: z.string(),
+});
+
 export const ApprovalSchema = z.object({
   normalizedCode: NonEmptyStringSchema,
   countryCode: CountryCodeSchema,
@@ -138,4 +184,8 @@ export type CoaEntry = z.infer<typeof CoaEntrySchema>;
 export type MappingDecision = z.infer<typeof MappingDecisionSchema>;
 export type Anomaly = z.infer<typeof AnomalySchema>;
 export type JournalRow = z.infer<typeof JournalRowSchema>;
+export type MappedPayrollLine = z.infer<typeof MappedPayrollLineSchema>;
+export type AnomalousPayrollLine = z.infer<typeof AnomalousPayrollLineSchema>;
+export type ReconciledPayrollLine = z.infer<typeof ReconciledPayrollLineSchema>;
+export type AuditTrailRow = z.infer<typeof AuditTrailRowSchema>;
 export type Approval = z.infer<typeof ApprovalSchema>;
