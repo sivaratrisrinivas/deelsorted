@@ -75,13 +75,14 @@ This repo is no longer docs-only. It now contains:
 - a working Vitest test harness
 - fixture-backed reconciliation domain logic
 - a server route for running reconciliation
-- a browser upload flow with mapped-line review, anomaly detail, and CSV downloads
+- a server route for saving approved mappings
+- a browser upload flow with mapped-line review, anomaly detail, CSV downloads, and approval actions
 
-The demo is not feature-complete yet, but the headless reconciliation engine and the current browser-visible review flow are now in place.
+The core demo loop is now in place through approval persistence. Hardening and closeout work still remain.
 
 ## Current status
 
-Status today: planning is complete, the headless reconcile engine is working against fixtures, and the upload -> reconcile -> inspect -> download browser flow is wired up.
+Status today: planning is complete, Tasks 1 through 10 are implemented, and the upload -> reconcile -> inspect -> download -> approve browser flow is wired up.
 
 What is already done:
 
@@ -91,15 +92,17 @@ What is already done:
 - the supported payroll JSON and COA CSV fixtures are in the repo
 - parsing, normalization, retrieval, Gemini orchestration, journal building, and audit export helpers are implemented
 - `/api/reconcile` accepts uploaded files and returns structured reconcile results
-- the home page lets you upload the supported files, review mapped lines, inspect anomalies, and download journal and audit trail CSVs
+- `/api/approvals` persists confirmed mappings to local JSON storage
+- the home page lets you upload the supported files, review mapped lines, inspect anomalies, download journal and audit trail CSVs, and approve confirmed mappings
 - the results UI shows selected GL account, confidence, reasoning, and whether a mapping came from the model or approved memory
-- an integration test covers the results rendering and CSV download markup
+- approving a mapped line stores it for future reruns of the same normalized concept
+- integration tests cover the results rendering, local approval persistence, and approved-memory reuse flow
 - the app builds and serves locally in WSL
 - the workspace-root warning from the unrelated WSL `pnpm-lock.yaml` is handled in `next.config.ts`
 
 What comes next:
 
-- approval persistence in the UI flow
+- invalid-input and model-failure hardening
 - hardening and closeout docs
 
 ## How to run the project
@@ -137,6 +140,8 @@ Today the local demo supports this browser-visible slice:
 6. Review the selected GL account, confidence, journal role, and reasoning for each mapped line.
 7. Review anomalies in a separate panel with a human-readable reason.
 8. Download the journal CSV and audit trail CSV for the completed run.
+9. Approve any mapped line you want to reuse later.
+10. Rerun reconciliation and see reused decisions marked as `Approved memory`.
 
 The route currently depends on a server-side Gemini API key and returns structured JSON that the browser renders into the review and export UI.
 

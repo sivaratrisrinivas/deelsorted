@@ -199,6 +199,11 @@ export const ApprovalSchema = z.object({
   approvedAt: IsoDateTimeSchema,
 });
 
+export const ApprovalInputSchema = ApprovalSchema.omit({
+  status: true,
+  approvedAt: true,
+});
+
 export const ApprovalStoreSchema = z.array(ApprovalSchema);
 
 export type SupportedPayrollFile = z.infer<typeof SupportedPayrollFileSchema>;
@@ -217,4 +222,5 @@ export type AnomalousPayrollLine = z.infer<typeof AnomalousPayrollLineSchema>;
 export type ReconciledPayrollLine = z.infer<typeof ReconciledPayrollLineSchema>;
 export type AuditTrailRow = z.infer<typeof AuditTrailRowSchema>;
 export type Approval = z.infer<typeof ApprovalSchema>;
+export type ApprovalInput = z.infer<typeof ApprovalInputSchema>;
 export type ApprovalStore = z.infer<typeof ApprovalStoreSchema>;

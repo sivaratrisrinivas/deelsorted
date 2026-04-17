@@ -1,4 +1,5 @@
 import type { MappedPayrollLine } from "../../../types/reconcile";
+import { ApprovalActions } from "./approval-actions";
 
 type ResultsTableProps = {
   lines: readonly MappedPayrollLine[];
@@ -75,6 +76,7 @@ export function ResultsTable({
                   "Confidence",
                   "Journal Role",
                   "Reasoning",
+                  "Approval",
                 ].map((heading) => (
                   <th
                     key={heading}
@@ -203,6 +205,15 @@ export function ResultsTable({
                     }}
                   >
                     {line.reasoning}
+                  </td>
+                  <td
+                    style={{
+                      padding: "0.9rem 0.75rem",
+                      borderBottom: "1px solid rgba(31, 41, 55, 0.08)",
+                      verticalAlign: "top",
+                    }}
+                  >
+                    <ApprovalActions line={line} />
                   </td>
                 </tr>
               ))}

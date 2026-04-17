@@ -124,6 +124,8 @@ describe("ResultsSummary", () => {
     expect(html).toContain("Model response was below the confidence threshold.");
     expect(html).toContain("Download journal CSV");
     expect(html).toContain("Download audit trail CSV");
+    expect(html).toContain("Approve mapping");
+    expect(html).toContain("Save this confirmed mapping for future runs.");
 
     const journalHref = extractDownloadHref(html, "deelsorted-journal.csv");
     const auditHref = extractDownloadHref(html, "deelsorted-audit-trail.csv");

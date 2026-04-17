@@ -23,6 +23,9 @@ function createEmptyApprovalMemory(): ApprovalMemory {
     async getApprovedMapping() {
       return null;
     },
+    async saveApprovedMapping(input) {
+      return input;
+    },
   };
 }
 
