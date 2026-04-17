@@ -82,6 +82,29 @@ export const JournalRoleSchema = z.enum(["expense", "liability"]);
 export const MappingSourceSchema = z.enum(["model", "memory"]);
 export const ReconcileLineStatusSchema = z.enum(["mapped", "anomaly"]);
 
+export const ModelMatchedDecisionSchema = z.object({
+  isAnomaly: z.literal(false),
+  selectedAccountId: NonEmptyStringSchema,
+  journalRole: JournalRoleSchema,
+  confidenceScore: z.number().min(0).max(1),
+  confidenceBand: ConfidenceBandSchema,
+  reasoning: NonEmptyStringSchema,
+});
+
+export const ModelNoMatchDecisionSchema = z.object({
+  isAnomaly: z.literal(true),
+  selectedAccountId: z.null(),
+  journalRole: z.null(),
+  confidenceScore: z.number().min(0).max(1),
+  confidenceBand: ConfidenceBandSchema,
+  reasoning: NonEmptyStringSchema,
+});
+
+export const ModelMappingDecisionSchema = z.discriminatedUnion("isAnomaly", [
+  ModelMatchedDecisionSchema,
+  ModelNoMatchDecisionSchema,
+]);
+
 export const MappingDecisionSchema = z.object({
   normalizedCode: NonEmptyStringSchema,
   countryCode: CountryCodeSchema,
@@ -183,6 +206,9 @@ export type SupportedPayrollItem = z.infer<typeof SupportedPayrollItemSchema>;
 export type PayrollLine = z.infer<typeof PayrollLineSchema>;
 export type CoaCsvRow = z.infer<typeof CoaCsvRowSchema>;
 export type CoaEntry = z.infer<typeof CoaEntrySchema>;
+export type ModelMatchedDecision = z.infer<typeof ModelMatchedDecisionSchema>;
+export type ModelNoMatchDecision = z.infer<typeof ModelNoMatchDecisionSchema>;
+export type ModelMappingDecision = z.infer<typeof ModelMappingDecisionSchema>;
 export type MappingDecision = z.infer<typeof MappingDecisionSchema>;
 export type Anomaly = z.infer<typeof AnomalySchema>;
 export type JournalRow = z.infer<typeof JournalRowSchema>;
