@@ -84,6 +84,10 @@ describe("retrieval and memory", () => {
   });
 
   it("uses the repository memory file as an empty safe default", async () => {
+    const tempDirectory = mkdtempSync(join(tmpdir(), "deelsorted-memory-2-"));
+    const memoryFilePath = join(tempDirectory, "approved-mappings.json");
+    process.env.DEELSORTED_APPROVALS_FILE_PATH = memoryFilePath;
+
     const memory = createFileApprovalMemory();
 
     await expect(memory.listApprovedMappings()).resolves.toEqual([]);

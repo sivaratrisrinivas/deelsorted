@@ -15,9 +15,9 @@ describe("GET /api/demo-fixtures", () => {
     };
 
     expect(response.status).toBe(200);
-    expect(body.payrollFileName).toBe("payroll-sample.json");
-    expect(body.coaFileName).toBe("coa-sample.csv");
-    expect(parsePayrollJson(body.payrollText)).toHaveLength(8);
-    expect(parseCoaCsv(body.coaText)).toHaveLength(6);
+    expect(body.payrollFileName).toBe("payroll-1000-sample.json");
+    expect(body.coaFileName).toBe("coa-large-sample.csv");
+    expect(parsePayrollJson(body.payrollText)).toHaveLength(1000);
+    expect(parseCoaCsv(body.coaText)).toHaveLength(14);
   });
 });

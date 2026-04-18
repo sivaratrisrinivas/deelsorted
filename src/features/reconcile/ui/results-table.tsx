@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import type { MappedPayrollLine } from "../../../types/reconcile";
 import { ApprovalActions } from "./approval-actions";
 
@@ -53,6 +56,13 @@ function LineStream({
   lines: readonly MappedPayrollLine[],
   urgent?: boolean
 }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
+  const totalPages = Math.ceil(lines.length / itemsPerPage);
+  
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const visibleLines = lines.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <section>
       <div style={{ marginBottom: "1rem" }}>
@@ -86,7 +96,7 @@ function LineStream({
       </div>
 
       <div style={{ display: "grid", gap: "0" }}>
-        {lines.map((line, idx) => (
+        {visibleLines.map((line, idx) => (
           <div 
             key={line.lineId}
             style={{
@@ -173,6 +183,55 @@ function LineStream({
           </div>
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1rem", background: "var(--color-surface-container-high)", color: "var(--color-on-surface)" }}>
+          <div style={{ fontSize: "0.85rem", fontFamily: "var(--font-engine)" }}>
+            SHOWING <span style={{ fontFamily: "monospace" }}>{startIndex + 1}</span> - <span style={{ fontFamily: "monospace" }}>{Math.min(startIndex + itemsPerPage, lines.length)}</span> OF <span style={{ fontFamily: "monospace" }}>{lines.length}</span>
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button 
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              style={{
+                border: "none",
+                borderRadius: "0",
+                background: currentPage === 1 ? "transparent" : "var(--color-surface-container-highest)",
+                color: currentPage === 1 ? "var(--color-outline-variant)" : "var(--color-on-surface)",
+                padding: "0.5rem 1rem",
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                fontFamily: "var(--font-engine)",
+                cursor: currentPage === 1 ? "not-allowed" : "pointer"
+              }}
+            >
+              Previous
+            </button>
+            <div style={{ padding: "0.5rem 1rem", fontSize: "0.8rem", fontFamily: "monospace", display: "flex", alignItems: "center" }}>
+              PAGE {currentPage}
+            </div>
+            <button 
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              style={{
+                border: "none",
+                borderRadius: "0",
+                background: currentPage === totalPages ? "transparent" : "var(--color-surface-container-highest)",
+                color: currentPage === totalPages ? "var(--color-outline-variant)" : "var(--color-on-surface)",
+                padding: "0.5rem 1rem",
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                fontFamily: "var(--font-engine)",
+                cursor: currentPage === totalPages ? "not-allowed" : "pointer"
+              }}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -1,5 +1,6 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { JournalRow } from "../../src/types/reconcile";
 
@@ -95,9 +96,15 @@ function createRouteRequest(): Request {
 
 describe("POST /api/reconcile", () => {
   const originalGeminiApiKey = process.env.GEMINI_API_KEY;
+  const originalApprovalsFilePath = process.env.DEELSORTED_APPROVALS_FILE_PATH;
   const originalFetch = global.fetch;
 
   beforeEach(() => {
+    const tempDirectory = mkdtempSync(join(tmpdir(), "deelsorted-reconcile-flow-"));
+    const approvalsFilePath = join(tempDirectory, "approved-mappings.json");
+    writeFileSync(approvalsFilePath, "[]");
+    
+    process.env.DEELSORTED_APPROVALS_FILE_PATH = approvalsFilePath;
     process.env.GEMINI_API_KEY = "test-key";
     global.fetch = vi.fn(async (_input, init) => {
       const body = JSON.parse(String(init?.body)) as {
@@ -129,10 +136,15 @@ describe("POST /api/reconcile", () => {
 
     if (originalGeminiApiKey === undefined) {
       delete process.env.GEMINI_API_KEY;
-      return;
+    } else {
+      process.env.GEMINI_API_KEY = originalGeminiApiKey;
     }
-
-    process.env.GEMINI_API_KEY = originalGeminiApiKey;
+    
+    if (originalApprovalsFilePath === undefined) {
+      delete process.env.DEELSORTED_APPROVALS_FILE_PATH;
+    } else {
+      process.env.DEELSORTED_APPROVALS_FILE_PATH = originalApprovalsFilePath;
+    }
   });
 
   it("accepts payroll and COA uploads and returns basic reconcile results", async () => {

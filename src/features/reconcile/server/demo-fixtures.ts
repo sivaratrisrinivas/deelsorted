@@ -8,8 +8,8 @@ export type DemoFixturePayload = {
   coaText: string;
 };
 
-const DEMO_PAYROLL_FILE_NAME = "payroll-sample.json";
-const DEMO_COA_FILE_NAME = "coa-sample.csv";
+const DEMO_PAYROLL_FILE_NAME = "payroll-1000-sample.json";
+const DEMO_COA_FILE_NAME = "coa-large-sample.csv";
 
 export async function loadDemoFixtures(): Promise<DemoFixturePayload> {
   const fixturesDir = join(process.cwd(), "fixtures");

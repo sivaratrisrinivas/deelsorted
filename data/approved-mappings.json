@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "normalizedCode": "EMPLOYER_COSTS_EMPLOYER_SOCIAL_INSURANCE",
+    "countryCode": null,
+    "selectedAccountId": "exp-payroll-tax",
+    "journalRole": "expense",
+    "confidenceScore": 0.85,
+    "confidenceBand": "high",
+    "rationale": "The payroll concept 'Employer Social Insurance' clearly aligns with the 'Payroll Taxes' account, which is designated for 'Employer payroll tax expense' and explicitly matches tokens such as 'EMPLOYER', 'SOCIAL', 'INSURANCE', and 'TAXES'.",
+    "status": "confirmed",
+    "approvedAt": "2026-04-18T21:55:31Z"
+  }
+]
