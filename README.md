@@ -159,6 +159,15 @@ The route currently depends on a server-side Gemini API key and returns structur
 
 The checked-in Gemini runtime uses a small server-side Developer API client in `src/features/reconcile/server/runtime.ts` and passes its responses through the schema-validated mapping adapter in `src/features/reconcile/server/gemini.ts`. The approved spec still tracks `@google/genai` as the preferred SDK direction, but that package is not a current repository dependency.
 
+## Next planned ingestion slice
+
+The checked-in app still supports the current v1 demo upload contract today. The next planned ingestion phase will cut payroll uploads over to schema-faithful Deel G2N JSON and broaden COA support through explicit CSV header aliases instead of claiming support for arbitrary input files.
+
+Those changes are planned in dedicated docs and are not yet implemented in the current browser flow:
+
+- `docs/specs/deelsorted-g2n-ingestion-spec.md`
+- `docs/specs/deelsorted-g2n-ingestion-plan.md`
+
 ## Verification snapshot
 
 Final closeout verification is recorded from a WSL bash shell in this repository.
@@ -217,6 +226,8 @@ These rules are guiding the build:
 - Idea: [docs/ideas/deelsorted.md](docs/ideas/deelsorted.md)
 - Spec: [docs/specs/deelsorted-v1-demo-spec.md](docs/specs/deelsorted-v1-demo-spec.md)
 - Plan: [docs/specs/deelsorted-v1-demo-plan.md](docs/specs/deelsorted-v1-demo-plan.md)
+- Next-phase G2N spec: [docs/specs/deelsorted-g2n-ingestion-spec.md](docs/specs/deelsorted-g2n-ingestion-spec.md)
+- Next-phase G2N plan: [docs/specs/deelsorted-g2n-ingestion-plan.md](docs/specs/deelsorted-g2n-ingestion-plan.md)
 - Project rules: [AGENTS.md](AGENTS.md)
 - Source pack: [docs/references/deelsorted-source-pack.md](docs/references/deelsorted-source-pack.md)
 - TDD playbook: [docs/references/deelsorted-tdd-playbook.md](docs/references/deelsorted-tdd-playbook.md)
