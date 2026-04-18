@@ -18,6 +18,35 @@ export const PayrollCategorySchema = z.enum([
 
 export const PayrollPartySideSchema = z.enum(["employee", "employer"]);
 
+export const DeelG2nItemSchema = z.object({
+  label: NonEmptyStringSchema,
+  value: z.number().finite(),
+  category: NonEmptyStringSchema,
+  sub_category: NonEmptyStringSchema,
+  category_group: NonEmptyStringSchema,
+});
+
+export const DeelG2nPaymentDataSchema = z.object({
+  conversion_rate: NonEmptyStringSchema,
+  payment_currency: CurrencyCodeSchema,
+});
+
+export const DeelG2nContractSchema = z.object({
+  contract_oid: NonEmptyStringSchema,
+  currency: CurrencyCodeSchema,
+  payment_data: DeelG2nPaymentDataSchema,
+  items: z.array(DeelG2nItemSchema).min(1),
+});
+
+export const DeelG2nReportSchema = z.object({
+  data: z.array(DeelG2nContractSchema).min(1),
+  has_more: z.boolean(),
+  created_at: IsoDateTimeSchema,
+  updated_at: IsoDateTimeSchema,
+  next_cursor: z.union([NonEmptyStringSchema, z.null()]),
+  items_per_page: z.number().int().positive(),
+});
+
 export const SupportedPayrollItemSchema = z.object({
   itemId: NonEmptyStringSchema,
   workerId: NonEmptyStringSchema,
@@ -206,6 +235,10 @@ export const ApprovalInputSchema = ApprovalSchema.omit({
 
 export const ApprovalStoreSchema = z.array(ApprovalSchema);
 
+export type DeelG2nItem = z.infer<typeof DeelG2nItemSchema>;
+export type DeelG2nPaymentData = z.infer<typeof DeelG2nPaymentDataSchema>;
+export type DeelG2nContract = z.infer<typeof DeelG2nContractSchema>;
+export type DeelG2nReport = z.infer<typeof DeelG2nReportSchema>;
 export type SupportedPayrollFile = z.infer<typeof SupportedPayrollFileSchema>;
 export type SupportedPayrollItem = z.infer<typeof SupportedPayrollItemSchema>;
 export type PayrollLine = z.infer<typeof PayrollLineSchema>;

@@ -64,7 +64,7 @@ function createNoMatchDecision(input: {
 describe("reconcile service", () => {
   it("maps repeated normalized concepts with a single model decision per concept", async () => {
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
-    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const candidateProvider = createLocalCandidateProvider(accounts);
     const mappingEngine: MappingDecisionEngine = {
       mapConcept: vi.fn(async ({ concept }) => {
@@ -148,7 +148,7 @@ describe("reconcile service", () => {
 
   it("quarantines invalid, NO_MATCH, and low-confidence decisions as anomalies", async () => {
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
-    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const candidateProvider = createLocalCandidateProvider(accounts);
     const mappingEngine: MappingDecisionEngine = {
       mapConcept: vi.fn(async ({ concept }) => {

@@ -65,9 +65,13 @@ function createRouteRequest(): Request {
 
   formData.set(
     "payrollFile",
-    new File([loadFixture("payroll-sample.json")], "payroll-sample.json", {
-      type: "application/json",
-    }),
+    new File(
+      [loadFixture("payroll-legacy-sample.json")],
+      "payroll-legacy-sample.json",
+      {
+        type: "application/json",
+      },
+    ),
   );
   formData.set(
     "coaFile",

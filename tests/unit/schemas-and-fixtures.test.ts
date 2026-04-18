@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   CoaCsvRowSchema,
-  SupportedPayrollFileSchema,
+  DeelG2nReportSchema,
 } from "../../src/types/reconcile";
 
 function loadFixture(name: string): string {
@@ -29,9 +29,9 @@ function parseCsvRows(csvText: string): Array<Record<string, string>> {
 }
 
 describe("schemas and fixtures", () => {
-  it("accepts the supported payroll sample fixture", () => {
+  it("accepts the schema-faithful Deel G2N payroll fixture", () => {
     const payrollFixture = JSON.parse(loadFixture("payroll-sample.json"));
-    const result = SupportedPayrollFileSchema.safeParse(payrollFixture);
+    const result = DeelG2nReportSchema.safeParse(payrollFixture);
 
     expect(result.success).toBe(true);
   });
@@ -45,12 +45,12 @@ describe("schemas and fixtures", () => {
   });
 
   it("rejects malformed payroll input", () => {
-    const result = SupportedPayrollFileSchema.safeParse({
-      payrollRunId: "run-april-2026",
-      period: {
-        startDate: "2026-04-01",
-      },
-      items: [],
+    const result = DeelG2nReportSchema.safeParse({
+      data: [],
+      has_more: false,
+      created_at: "2026-04-18T08:30:00Z",
+      next_cursor: null,
+      items_per_page: 5,
     });
 
     expect(result.success).toBe(false);

@@ -16,7 +16,7 @@ function loadFixture(name: string): string {
 describe("gemini adapter", () => {
   it("parses valid structured Gemini output into a mapping decision", async () => {
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
-    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const candidateProvider = createLocalCandidateProvider(accounts);
     const concept = payrollLines[1]!;
     const candidates = await candidateProvider.shortlistCandidates({
@@ -71,7 +71,7 @@ describe("gemini adapter", () => {
 
   it("rejects invalid model output", async () => {
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
-    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const candidateProvider = createLocalCandidateProvider(accounts);
     const concept = payrollLines[1]!;
     const candidates = await candidateProvider.shortlistCandidates({

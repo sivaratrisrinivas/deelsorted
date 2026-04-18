@@ -79,8 +79,8 @@ describe("Task 11 error states", () => {
     const response = await POST(
       createRequest({
         payrollFile: new File(
-          [loadFixture("payroll-sample.json")],
-          "payroll-sample.json",
+          [loadFixture("payroll-legacy-sample.json")],
+          "payroll-legacy-sample.json",
           {
             type: "application/json",
           },

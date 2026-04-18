@@ -97,7 +97,7 @@ describe("approval flow", () => {
     ]);
 
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
-    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const candidateProvider = createLocalCandidateProvider(accounts);
     const mappingEngine: MappingDecisionEngine = {
       mapConcept: vi.fn(async ({ concept }) => {

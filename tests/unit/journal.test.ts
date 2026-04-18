@@ -67,7 +67,7 @@ function getCurrencyBalance(
 
 describe("journal", () => {
   it("groups journal rows by currency and balances each currency", () => {
-    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
     const byId = new Map(accounts.map((account) => [account.accountId, account]));
     const reconciledLines: ReconciledPayrollLine[] = [
@@ -102,7 +102,7 @@ describe("journal", () => {
   });
 
   it("separates anomalies from mapped lines instead of forcing them into the journal", () => {
-    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
     const byId = new Map(accounts.map((account) => [account.accountId, account]));
     const anomaly = createAnomalyLine(payrollLines[6]!);

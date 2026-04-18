@@ -53,7 +53,7 @@ describe("normalize", () => {
   });
 
   it("groups repeated country-specific codes into a shared concept key", () => {
-    const lines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const lines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const grouped = groupPayrollLinesByConcept(lines);
 
     expect(grouped.get("GB::UK_NI_EMPLOYER_CONTRIBUTION_TIER_1")).toHaveLength(

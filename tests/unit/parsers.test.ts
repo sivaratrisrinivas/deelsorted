@@ -3,14 +3,21 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseCoaCsv } from "../../src/lib/parsers/coa";
 import { parsePayrollJson } from "../../src/lib/parsers/payroll";
+import { DeelG2nReportSchema } from "../../src/types/reconcile";
 
 function loadFixture(name: string): string {
   return readFileSync(join(process.cwd(), "fixtures", name), "utf8");
 }
 
 describe("parsers", () => {
-  it("parses the supported Deel payroll fixture into canonical payroll lines", () => {
-    const lines = parsePayrollJson(loadFixture("payroll-sample.json"));
+  it("accepts the schema-faithful Deel G2N payroll fixture", () => {
+    const report = JSON.parse(loadFixture("payroll-sample.json"));
+
+    expect(DeelG2nReportSchema.safeParse(report).success).toBe(true);
+  });
+
+  it("parses the current legacy payroll fixture into canonical payroll lines", () => {
+    const lines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
 
     expect(lines).toHaveLength(8);
     expect(lines[0]).toEqual({

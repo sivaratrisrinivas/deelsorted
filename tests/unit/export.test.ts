@@ -53,7 +53,7 @@ function createAnomalyLine(
 
 describe("export", () => {
   it("exports journal rows as stable CSV output", () => {
-    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
     const byId = new Map(accounts.map((account) => [account.accountId, account]));
 
@@ -76,7 +76,7 @@ describe("export", () => {
   });
 
   it("exports audit rows with raw code, selected account, confidence, and anomaly state", () => {
-    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
     const byId = new Map(accounts.map((account) => [account.accountId, account]));
     const reconciledLines: ReconciledPayrollLine[] = [

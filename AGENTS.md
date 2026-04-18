@@ -4,6 +4,9 @@
 - Planning is complete.
 - Implementation through Task 12 is complete.
 - Tasks 1 through 12 are implemented in the repository.
+- The next-phase G2N ingestion follow-up is started through its first prep slice.
+- Schema-faithful Deel G2N schemas and a mock G2N fixture are checked in.
+- The current browser/runtime still uses the preserved legacy payroll fixture until the parser cutover slice lands.
 - The current source of truth is the repository docs plus the checked-in application code and tests.
 
 ## What We Are Building
@@ -26,6 +29,11 @@ Read these in this order before starting feature work:
 4. `docs/ideas/deelsorted.md` if you need product background
 
 If code and docs conflict, surface the conflict instead of silently choosing one.
+
+For the next-phase ingestion follow-up, also read:
+
+5. `docs/specs/deelsorted-g2n-ingestion-spec.md`
+6. `docs/specs/deelsorted-g2n-ingestion-plan.md`
 
 ## Planned Tech Stack
 - Next.js App Router
@@ -58,7 +66,8 @@ These are the current project commands.
 - AI is only for semantic mapping from payroll concepts to GL account candidates.
 - AI must never invent journal math, debit and credit balancing, or CSV export logic.
 - Journal building, anomaly handling, and exports are deterministic.
-- V1 supports exactly one payroll JSON shape and one COA CSV shape.
+- The checked-in runtime currently supports the legacy demo payroll JSON shape and one COA CSV shape.
+- The repo now also contains schema-faithful Deel G2N schemas and a mock G2N fixture for the next ingestion slice, but that cutover is not yet wired into the live parser or upload UI.
 - Approved mappings are stored per normalized payroll concept, not per raw line.
 - Only explicit human approvals may be reused as memory.
 - Unsupported or uncertain cases should be quarantined as anomalies, not forced through.
@@ -120,10 +129,12 @@ When continuing implementation, follow this sequence:
 1. Load this file.
 2. Load the relevant task section from `docs/specs/deelsorted-v1-demo-plan.md`.
 3. Load only the relevant spec section from `docs/specs/deelsorted-v1-demo-spec.md`.
-4. Read the files you will touch.
-5. For framework-specific code, verify the official docs before implementing.
-6. Implement in small slices.
-7. Run the narrowest useful verification after each slice.
+4. If the task is part of the G2N ingestion follow-up, load the relevant section from `docs/specs/deelsorted-g2n-ingestion-plan.md`.
+5. If the task is part of the G2N ingestion follow-up, load only the relevant section from `docs/specs/deelsorted-g2n-ingestion-spec.md`.
+6. Read the files you will touch.
+7. For framework-specific code, verify the official docs before implementing.
+8. Implement in small slices.
+9. Run the narrowest useful verification after each slice.
 
 ## Task-by-Task Workflow
 - Work on one task from the implementation plan at a time.
@@ -175,6 +186,7 @@ Follow the approved plan:
 Progress today:
 - Steps 1 through 9 are implemented in the repo.
 - Task 12 closeout docs and final verification are implemented in the repo.
+- The next-phase G2N ingestion prep slice is checked in: Deel G2N schemas and a schema-faithful mock fixture are present, while parser and UI cutover remain follow-up scope.
 - Remaining work is user-directed follow-up scope, not an unfinished planned task.
 
 ## Success Markers

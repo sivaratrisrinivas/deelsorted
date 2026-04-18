@@ -1,98 +1,115 @@
 {
-  "payrollRunId": "demo-april-2026",
-  "generatedAt": "2026-04-17T03:00:00Z",
-  "period": {
-    "startDate": "2026-04-01",
-    "endDate": "2026-04-30"
-  },
-  "items": [
+  "data": [
     {
-      "itemId": "uk-001",
-      "workerId": "worker-uk-001",
-      "workerName": "Alice Carter",
-      "countryCode": "GB",
+      "contract_oid": "contract-gb-001",
       "currency": "GBP",
-      "category": "earnings",
-      "code": "UK_Gross_Pay",
-      "label": "Gross Pay",
-      "amount": 4200
+      "payment_data": {
+        "conversion_rate": "1.00",
+        "payment_currency": "GBP"
+      },
+      "items": [
+        {
+          "label": "Gross Pay",
+          "value": 4200,
+          "category": "Gross (Taxable)",
+          "sub_category": "Salary",
+          "category_group": "EARNINGS"
+        },
+        {
+          "label": "Employer National Insurance Tier 1",
+          "value": 820.15,
+          "category": "Taxes",
+          "sub_category": "Employer National Insurance",
+          "category_group": "EMPLOYER_COSTS"
+        },
+        {
+          "label": "Net Salary",
+          "value": 2985.67,
+          "category": "Net Pay",
+          "sub_category": "Payroll",
+          "category_group": "NET_PAY"
+        }
+      ]
     },
     {
-      "itemId": "uk-002",
-      "workerId": "worker-uk-001",
-      "workerName": "Alice Carter",
-      "countryCode": "GB",
+      "contract_oid": "contract-gb-002",
       "currency": "GBP",
-      "category": "employer_taxes",
-      "code": "UK_NI_Employer_Contribution_Tier_1",
-      "label": "Employer National Insurance Tier 1",
-      "amount": 820.15
+      "payment_data": {
+        "conversion_rate": "1.00",
+        "payment_currency": "GBP"
+      },
+      "items": [
+        {
+          "label": "Employer National Insurance Tier 1",
+          "value": 615.32,
+          "category": "Taxes",
+          "sub_category": "Employer National Insurance",
+          "category_group": "EMPLOYER_COSTS"
+        }
+      ]
     },
     {
-      "itemId": "uk-003",
-      "workerId": "worker-uk-002",
-      "workerName": "Ben Mason",
-      "countryCode": "GB",
-      "currency": "GBP",
-      "category": "employer_taxes",
-      "code": "UK_NI_Employer_Contribution_Tier_1",
-      "label": "Employer National Insurance Tier 1",
-      "amount": 615.32
-    },
-    {
-      "itemId": "br-001",
-      "workerId": "worker-br-001",
-      "workerName": "Carla Souza",
-      "countryCode": "BR",
+      "contract_oid": "contract-br-001",
       "currency": "BRL",
-      "category": "employee_taxes",
-      "code": "BR_INSS_Empregado",
-      "label": "INSS Employee Contribution",
-      "amount": 540.44
+      "payment_data": {
+        "conversion_rate": "1.00",
+        "payment_currency": "BRL"
+      },
+      "items": [
+        {
+          "label": "INSS Employee Contribution",
+          "value": 540.44,
+          "category": "Taxes",
+          "sub_category": "Social Security",
+          "category_group": "DEDUCTIONS"
+        }
+      ]
     },
     {
-      "itemId": "br-002",
-      "workerId": "worker-br-002",
-      "workerName": "Diego Lima",
-      "countryCode": "BR",
+      "contract_oid": "contract-br-002",
       "currency": "BRL",
-      "category": "employee_taxes",
-      "code": "BR_INSS_Empregado",
-      "label": "INSS Employee Contribution",
-      "amount": 410.11
+      "payment_data": {
+        "conversion_rate": "1.00",
+        "payment_currency": "BRL"
+      },
+      "items": [
+        {
+          "label": "INSS Employee Contribution",
+          "value": 410.11,
+          "category": "Taxes",
+          "sub_category": "Social Security",
+          "category_group": "DEDUCTIONS"
+        }
+      ]
     },
     {
-      "itemId": "de-001",
-      "workerId": "worker-de-001",
-      "workerName": "Eva Fischer",
-      "countryCode": "DE",
+      "contract_oid": "contract-de-001",
       "currency": "EUR",
-      "category": "employer_taxes",
-      "code": "DE_Sozialversicherung_AG_Anteil",
-      "label": "Employer Social Insurance",
-      "amount": 960
-    },
-    {
-      "itemId": "de-002",
-      "workerId": "worker-de-001",
-      "workerName": "Eva Fischer",
-      "countryCode": "DE",
-      "currency": "EUR",
-      "category": "employee_taxes",
-      "code": "DE_Lohnsteuer",
-      "label": "Wage Tax",
-      "amount": 700.5
-    },
-    {
-      "itemId": "gb-004",
-      "workerId": "worker-uk-001",
-      "workerName": "Alice Carter",
-      "countryCode": "GB",
-      "currency": "GBP",
-      "category": "net_pay",
-      "code": "Net_Salary",
-      "label": "Net Salary",
-      "amount": 2985.67
+      "payment_data": {
+        "conversion_rate": "1.00",
+        "payment_currency": "EUR"
+      },
+      "items": [
+        {
+          "label": "Employer Social Insurance",
+          "value": 960,
+          "category": "Taxes",
+          "sub_category": "Employer Social Insurance",
+          "category_group": "EMPLOYER_COSTS"
+        },
+        {
+          "label": "Wage Tax",
+          "value": 700.5,
+          "category": "Taxes",
+          "sub_category": "Income Tax",
+          "category_group": "DEDUCTIONS"
+        }
+      ]
     }
-  ]
+  ],
+  "has_more": false,
+  "created_at": "2026-04-18T08:30:00Z",
+  "updated_at": "2026-04-18T08:30:00Z",
+  "next_cursor": null,
+  "items_per_page": 5
 }

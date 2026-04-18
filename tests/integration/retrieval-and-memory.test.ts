@@ -15,7 +15,7 @@ function loadFixture(name: string): string {
 describe("retrieval and memory", () => {
   it("shortlists the most relevant COA accounts for a payroll concept", async () => {
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
-    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
     const candidateProvider = createLocalCandidateProvider(accounts);
 
     const employerTaxCandidates = await candidateProvider.shortlistCandidates({
