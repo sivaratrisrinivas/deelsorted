@@ -121,7 +121,7 @@ describe("Task 11 error states", () => {
 
     expect(response.status).toBe(400);
     expect(body.error).toBe(
-      "COA CSV must match the supported chart-of-accounts format.",
+      "COA CSV could not be parsed. Upload the supported chart-of-accounts CSV.",
     );
   });
 

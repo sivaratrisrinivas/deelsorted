@@ -83,10 +83,10 @@ export const CoaCsvRowSchema = z.object({
   accountId: NonEmptyStringSchema,
   accountCode: NonEmptyStringSchema,
   name: NonEmptyStringSchema,
-  description: NonEmptyStringSchema,
+  description: z.string().trim().default(""),
   type: AccountTypeSchema,
   normalSide: NormalSideSchema,
-  aliases: NonEmptyStringSchema,
+  aliases: z.string().trim().default(""),
 });
 
 export const CoaEntrySchema = CoaCsvRowSchema.extend({

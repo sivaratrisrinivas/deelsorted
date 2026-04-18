@@ -32,19 +32,33 @@ The sample intentionally includes repeated concepts across multiple contracts an
 
 ## Legacy payroll JSON
 
-`payroll-legacy-sample.json` preserves the original v1 demo upload shape while the runtime parser is still being cut over to G2N in the following slice.
+`payroll-legacy-sample.json` preserves the original v1 demo upload shape as a checked-in reference fixture after the runtime parser cutover to G2N.
 
 ## Supported COA CSV
 
-`coa-sample.csv` is the single supported v1 chart-of-accounts upload shape.
+The checked-in COA fixtures now cover both the canonical demo header row and a supported alias-header variant:
 
-Required headers:
+- `coa-sample.csv` uses the canonical v1 header names.
+- `coa-alias-sample.csv` uses a curated alias set for common ERP-style header names.
+
+Required canonical fields:
 - `accountId`
 - `accountCode`
 - `name`
-- `description`
 - `type`
 - `normalSide`
+
+Optional canonical fields:
+- `description`
 - `aliases`
 
-`aliases` uses a pipe-delimited string so the fixture stays simple until the dedicated CSV parsing slice lands.
+Supported header aliases include:
+- `id` for `accountId`
+- `code`, `account number`, or `gl code` for `accountCode`
+- `account name` for `name`
+- `account description` for `description`
+- `account type` for `type`
+- `normal balance` for `normalSide`
+- `search terms` or `keywords` for `aliases`
+
+`aliases` continues to use a pipe-delimited string when present so the fixture stays easy to inspect in plain CSV form.

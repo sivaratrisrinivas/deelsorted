@@ -59,4 +59,59 @@ describe("parsers", () => {
     expect(accounts[3]?.aliases).toContain("inss");
     expect(accounts[4]?.normalSide).toBe("credit");
   });
+
+  it("parses a supported COA CSV that uses header aliases", () => {
+    const accounts = parseCoaCsv(loadFixture("coa-alias-sample.csv"));
+
+    expect(accounts).toEqual([
+      {
+        accountId: "exp-payroll-salary",
+        accountCode: "5000",
+        name: "Payroll Salaries",
+        description: "Gross salary expense",
+        type: "expense",
+        normalSide: "debit",
+        aliases: ["gross pay", "salary", "earnings"],
+      },
+      {
+        accountId: "liab-net-pay",
+        accountCode: "2220",
+        name: "Net Pay Liability",
+        description: "Net salary payable",
+        type: "liability",
+        normalSide: "credit",
+        aliases: ["net pay", "salary payable", "wages payable"],
+      },
+    ]);
+  });
+
+  it("defaults optional COA fields when alias-header CSV omits them", () => {
+    const csvText = [
+      "id,account number,account name,account type,normal balance",
+      "exp-payroll-salary,5000,Payroll Salaries,expense,debit",
+    ].join("\n");
+
+    expect(parseCoaCsv(csvText)).toEqual([
+      {
+        accountId: "exp-payroll-salary",
+        accountCode: "5000",
+        name: "Payroll Salaries",
+        description: "",
+        type: "expense",
+        normalSide: "debit",
+        aliases: [],
+      },
+    ]);
+  });
+
+  it("rejects ambiguous COA header aliases", () => {
+    const csvText = [
+      "accountCode,code,name,type,normalSide,accountId",
+      "5000,5000,Payroll Salaries,expense,debit,exp-payroll-salary",
+    ].join("\n");
+
+    expect(() => parseCoaCsv(csvText)).toThrow(
+      "COA CSV parsing failed: multiple columns map to accountCode: accountCode, code.",
+    );
+  });
 });

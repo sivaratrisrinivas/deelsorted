@@ -105,6 +105,7 @@ What is already done:
 - the live payroll parser now normalizes the checked-in G2N fixture into the existing deterministic reconcile flow
 - the upload route and browser UI now explicitly label the payroll upload as `Deel G2N JSON`
 - malformed payroll JSON and unsupported payroll schema now produce distinct G2N-specific upload errors
+- the COA parser now accepts a curated alias set for common CSV headers and safely defaults omitted `description` and `aliases` columns
 
 ## How to run the project
 
@@ -131,6 +132,7 @@ Demo fixtures live at:
 
 - `fixtures/payroll-sample.json`
 - `fixtures/coa-sample.csv`
+- `fixtures/coa-alias-sample.csv`
 
 `fixtures/payroll-sample.json` is the schema-faithful Deel G2N mock used by the checked-in runtime today.
 
@@ -169,24 +171,24 @@ The checked-in Gemini runtime uses a small server-side Developer API client in `
 
 ## Next planned ingestion slice
 
-The first three G2N ingestion slices are now landed in code: the repo contains explicit Deel G2N schemas, a schema-faithful mock G2N fixture, a live payroll parser that converts G2N items into canonical payroll lines for the existing reconcile engine, and upload wording that explicitly labels the supported payroll input as `Deel G2N JSON`.
+The first four G2N ingestion slices are now landed in code: the repo contains explicit Deel G2N schemas, a schema-faithful mock G2N fixture, a live payroll parser that converts G2N items into canonical payroll lines for the existing reconcile engine, upload wording that explicitly labels the supported payroll input as `Deel G2N JSON`, and a COA parser that accepts canonical headers plus a curated alias set with safe defaults for omitted optional columns.
 
-The next implementation slice will broaden COA support through explicit CSV header aliases instead of claiming support for arbitrary input files.
+The next implementation slice is the mocked end-to-end follow-up that re-verifies the full G2N upload path against the updated parser assumptions.
 
-Those changes are planned in dedicated docs and are not yet implemented in the current browser flow:
+That follow-up remains planned in dedicated docs:
 
 - `docs/specs/deelsorted-g2n-ingestion-spec.md`
 - `docs/specs/deelsorted-g2n-ingestion-plan.md`
 
 ## Verification snapshot
 
-Current verification is recorded from a WSL bash shell in this repository after the G2N upload-copy slice landed.
+Current verification is recorded from a WSL bash shell in this repository after the COA alias slice landed.
 
 - Date: `2026-04-18`
 - `npm run build` passed
 - `npm run lint` passed
 - `npm run typecheck` passed
-- `npm run test` passed with `13` test files and `29` tests green
+- `npm run test` passed with `13` test files and `32` tests green
 - Manual run check: `npm run dev -- --hostname 127.0.0.1 --port 3001` reached a ready Next.js server at `http://127.0.0.1:3001` in `2.7s`
 
 ## Planned v1 scope
@@ -196,7 +198,7 @@ The first version is meant to be a compelling demo, not a production accounting 
 In scope:
 
 - one supported payroll JSON format
-- one supported COA CSV format
+- supported COA CSV uploads with canonical headers or curated header aliases
 - sample payroll data for multiple countries
 - AI-assisted GL mapping
 - confidence scores and anomaly handling

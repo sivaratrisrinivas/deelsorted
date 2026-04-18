@@ -1,0 +1,3 @@
+id,gl code,account name,account description,account type,normal balance,search terms
+exp-payroll-salary,5000,Payroll Salaries,Gross salary expense,expense,debit,gross pay|salary|earnings
+liab-net-pay,2220,Net Pay Liability,Net salary payable,liability,credit,net pay|salary payable|wages payable
