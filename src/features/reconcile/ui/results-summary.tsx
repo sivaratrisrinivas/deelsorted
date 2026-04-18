@@ -171,7 +171,7 @@ function SummaryStat({ label, value, highlight, alert }: SummaryStatProps): Reac
   return (
     <div
       style={{
-        borderRadius: "12px",
+        borderRadius: "4px",
         padding: "1.25rem 1rem",
         background: "var(--color-surface-container)",
         border: `1px solid ${highlight ? "var(--color-primary)" : alert ? "var(--color-error)" : "var(--color-outline-variant)"}`,
@@ -179,13 +179,6 @@ function SummaryStat({ label, value, highlight, alert }: SummaryStatProps): Reac
         overflow: "hidden",
       }}
     >
-      {(highlight || alert) && (
-        <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: "2px",
-          background: highlight ? "var(--color-primary)" : alert ? "var(--color-error)" : "transparent",
-          boxShadow: highlight ? "0 0 10px var(--color-primary)" : alert ? "0 0 10px var(--color-error)" : "none",
-        }} />
-      )}
       <p
         style={{
           marginTop: 0,

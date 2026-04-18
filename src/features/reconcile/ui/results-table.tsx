@@ -107,8 +107,8 @@ function LineStream({
             <div style={{
               position: "absolute", left: 0, top: 0, bottom: 0, width: "3px",
               background: line.mappingSource === "memory" 
-                ? "var(--color-success)" 
-                : line.confidenceBand === "high" ? "var(--color-primary)" : "var(--color-warning)"
+                ? "var(--color-tertiary)" 
+                : line.confidenceBand === "high" ? "var(--color-primary)" : "var(--color-error)"
             }} />
 
             {/* Source Line Detail */}
@@ -132,8 +132,8 @@ function LineStream({
                 <span style={{
                   padding: "0.15rem 0.5rem",
                   borderRadius: "4px",
-                  background: line.mappingSource === "memory" ? "rgba(100, 255, 150, 0.1)" : "rgba(120, 180, 255, 0.1)",
-                  color: line.mappingSource === "memory" ? "var(--color-success)" : "var(--color-primary)",
+                  background: line.mappingSource === "memory" ? "var(--color-tertiary-container)" : "var(--color-primary-container)",
+                  color: line.mappingSource === "memory" ? "var(--color-tertiary)" : "var(--color-primary)",
                   fontSize: "0.75rem",
                   fontWeight: 600,
                   textTransform: "uppercase",

@@ -1,29 +1,29 @@
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  --color-background: #0b1326;
-  --color-surface: #0b1326;
-  --color-surface-container-low: #131b2e;
-  --color-surface-container-high: #222a3d;
-  --color-surface-container-highest: #2d3449;
+  --color-background: #faf8fe;
+  --color-surface: #faf8fe;
+  --color-surface-container-low: #f3f3fb;
+  --color-surface-container-high: #e6e7f4;
+  --color-surface-container-highest: #dfe2f0;
 
-  --color-primary: #b5c4ff;
-  --color-primary-container: #2e6bff;
-  --color-primary-fixed: #dbe1ff;
+  --color-primary: #005cbb;
+  --color-primary-container: #d7e2ff;
+  --color-primary-fixed: #d7e2ff;
 
-  --color-on-surface: #dae2fd;
-  --color-on-surface-variant: #c3c5d8;
+  --color-on-surface: #2e323d;
+  --color-on-surface-variant: #5b5f6b;
   
-  --color-tertiary: #4edea3;
-  --color-tertiary-container: #00885d;
+  --color-tertiary: #006f28; /* Success Green */
+  --color-tertiary-container: #6ffb85;
   
-  --color-error: #ffb4ab;
-  --color-error-container: #93000a;
+  --color-error: #9f403d; /* Risk Red */
+  --color-error-container: #fe8983;
   
-  --color-outline: #8d90a1;
-  --color-outline-variant: #434655;
+  --color-outline: #777a87;
+  --color-outline-variant: #aeb1bf;
 
-  --font-display: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-engine: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -58,15 +58,15 @@ button, input {
 }
 
 .glass-panel {
-  background: rgba(45, 52, 73, 0.4);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(67, 70, 85, 0.2);
+  background: var(--color-surface-container-low);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(174, 177, 191, 0.2); /* Ghost border using outline_variant */
 }
 
 .ghost-border {
-  border: 1px solid rgba(67, 70, 85, 0.2);
+  border: 1px solid rgba(174, 177, 191, 0.2);
 }
 
 .shadow-ambient {
-  box-shadow: 0 20px 40px rgba(6, 14, 32, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 92, 187, 0.04); /* primary tinted shadow, almost invisible */
 }

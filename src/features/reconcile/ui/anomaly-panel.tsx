@@ -53,9 +53,9 @@ export function AnomalyPanel({
           <article
             key={line.lineId}
             style={{
-              background: "rgba(147, 0, 10, 0.05)",
+              background: "var(--color-surface-container-low)",
               border: "1px solid var(--color-error-container)",
-              borderRadius: "12px",
+              borderRadius: "4px",
               padding: "1.25rem",
               position: "relative",
               overflow: "hidden"
@@ -96,7 +96,7 @@ export function AnomalyPanel({
                   </span>
                   {line.confidenceScore !== undefined && (
                     <div style={{ marginTop: "0.5rem", fontSize: "0.85rem", color: "var(--color-error)" }}>
-                      AI Confidence: {formatConfidence(line.confidenceScore)}
+                      Engine Confidence: {formatConfidence(line.confidenceScore)}
                     </div>
                   )}
                 </div>
