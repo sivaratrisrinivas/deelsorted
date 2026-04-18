@@ -8,225 +8,170 @@ type ResultsTableProps = {
 export function ResultsTable({
   lines,
 }: ResultsTableProps): React.JSX.Element {
+  
+  const fastTrackLines = lines.filter(l => l.mappingSource === "memory" || l.confidenceBand === "high");
+  const reviewLines = lines.filter(l => l.mappingSource !== "memory" && l.confidenceBand !== "high");
+
   return (
-    <section
-      style={{
-        borderRadius: "22px",
-        border: "1px solid rgba(31, 41, 55, 0.08)",
-        background: "rgba(255, 255, 255, 0.82)",
-        padding: "1.5rem",
-      }}
-    >
-      <div
-        style={{
-          display: "grid",
-          gap: "0.4rem",
-          marginBottom: "1rem",
-        }}
-      >
-        <p
-          style={{
-            margin: 0,
-            fontSize: "0.85rem",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: "#8b6a45",
-          }}
+    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      {reviewLines.length > 0 && (
+        <LineStream 
+          title="Manual Review" 
+          description="AI mapped these lines but flagged them for human verification." 
+          lines={reviewLines} 
+          urgent={true} 
+        />
+      )}
+      
+      {fastTrackLines.length > 0 ? (
+        <LineStream 
+          title="Fast Track" 
+          description="High confidence mappings and approved memory matches." 
+          lines={fastTrackLines} 
+        />
+      ) : reviewLines.length === 0 ? (
+        <section
+          className="glass-panel"
+          style={{ padding: "2rem", textAlign: "center" }}
         >
-          Mapped Lines
+          <p style={{ margin: 0, color: "var(--color-on-surface-variant)" }}>
+            No mapped lines were produced in this run.
+          </p>
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
+function LineStream({ 
+  title, 
+  description, 
+  lines, 
+  urgent 
+}: { 
+  title: string, 
+  description: string, 
+  lines: readonly MappedPayrollLine[],
+  urgent?: boolean
+}) {
+  return (
+    <section>
+      <div style={{ marginBottom: "1rem" }}>
+        <h3 style={{ 
+          margin: 0, 
+          fontSize: "1.2rem", 
+          fontFamily: "var(--font-engine)", 
+          color: urgent ? "var(--color-warning)" : "var(--color-primary)",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem"
+        }}>
+          <div style={{ 
+            width: "8px", height: "8px", borderRadius: "50%", 
+            background: urgent ? "var(--color-warning)" : "var(--color-primary)",
+            boxShadow: `0 0 8px ${urgent ? "var(--color-warning)" : "var(--color-primary)"}`
+          }} />
+          {title}
+          <span style={{ 
+            background: "var(--color-surface-container-high)", 
+            color: "var(--color-on-surface-variant)",
+            padding: "2px 8px", borderRadius: "12px", fontSize: "0.8rem", marginLeft: "0.5rem"
+          }}>
+            {lines.length}
+          </span>
+        </h3>
+        <p style={{ margin: "0.25rem 0 0", fontSize: "0.9rem", color: "var(--color-on-surface-variant)" }}>
+          {description}
         </p>
-        <h2
-          style={{
-            margin: 0,
-            color: "#111827",
-            fontSize: "1.5rem",
-          }}
-        >
-          Review the selected account for each mapped payroll line.
-        </h2>
       </div>
 
-      {lines.length === 0 ? (
-        <p
-          style={{
-            margin: 0,
-            color: "#6b7280",
-          }}
-        >
-          No mapped lines were produced in this run.
-        </p>
-      ) : (
-        <div
-          style={{
-            overflowX: "auto",
-          }}
-        >
-          <table
+      <div style={{ display: "grid", gap: "0.5rem" }}>
+        {lines.map((line) => (
+          <div 
+            key={line.lineId}
             style={{
-              width: "100%",
-              borderCollapse: "collapse",
+              background: "var(--color-surface-container-low)",
+              border: "1px solid var(--color-outline-variant)",
+              borderRadius: "12px",
+              padding: "1.25rem",
+              display: "grid",
+              gridTemplateColumns: "minmax(200px, 1fr) minmax(250px, 1.5fr) minmax(200px, 2fr) auto",
+              gap: "1.5rem",
+              alignItems: "start",
+              transition: "transform 0.2s, box-shadow 0.2s",
+              position: "relative",
+              overflow: "hidden"
             }}
           >
-            <thead>
-              <tr>
-                {[
-                  "Line",
-                  "Amount",
-                  "Selected Account",
-                  "Confidence",
-                  "Journal Role",
-                  "Reasoning",
-                  "Approval",
-                ].map((heading) => (
-                  <th
-                    key={heading}
-                    scope="col"
-                    style={{
-                      padding: "0.85rem 0.75rem",
-                      textAlign: "left",
-                      fontSize: "0.82rem",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      color: "#6b7280",
-                      borderBottom: "1px solid rgba(31, 41, 55, 0.08)",
-                    }}
-                  >
-                    {heading}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {lines.map((line) => (
-                <tr key={line.lineId}>
-                  <td
-                    style={{
-                      padding: "0.9rem 0.75rem",
-                      borderBottom: "1px solid rgba(31, 41, 55, 0.08)",
-                      verticalAlign: "top",
-                    }}
-                  >
-                    <strong
-                      style={{
-                        display: "block",
-                        color: "#111827",
-                      }}
-                    >
-                      {line.rawLabel}
-                    </strong>
-                    <span
-                      style={{
-                        display: "block",
-                        marginTop: "0.3rem",
-                        color: "#6b7280",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      {formatCountryCode(line.countryCode)} · {line.normalizedCode}
-                    </span>
-                  </td>
-                  <td
-                    style={{
-                      padding: "0.9rem 0.75rem",
-                      borderBottom: "1px solid rgba(31, 41, 55, 0.08)",
-                      verticalAlign: "top",
-                      color: "#111827",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {formatAmount(line.currency, line.amount)}
-                  </td>
-                  <td
-                    style={{
-                      padding: "0.9rem 0.75rem",
-                      borderBottom: "1px solid rgba(31, 41, 55, 0.08)",
-                      verticalAlign: "top",
-                    }}
-                  >
-                    <strong
-                      style={{
-                        display: "block",
-                        color: "#111827",
-                      }}
-                    >
-                      {line.selectedAccountCode} {line.selectedAccountName}
-                    </strong>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        marginTop: "0.45rem",
-                        padding: "0.25rem 0.55rem",
-                        borderRadius: "999px",
-                        background:
-                          line.mappingSource === "memory"
-                            ? "rgba(5, 150, 105, 0.1)"
-                            : "rgba(59, 130, 246, 0.1)",
-                        color:
-                          line.mappingSource === "memory" ? "#047857" : "#1d4ed8",
-                        fontSize: "0.8rem",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {line.mappingSource === "memory"
-                        ? "Approved memory"
-                        : "Gemini choice"}
-                    </span>
-                  </td>
-                  <td
-                    style={{
-                      padding: "0.9rem 0.75rem",
-                      borderBottom: "1px solid rgba(31, 41, 55, 0.08)",
-                      verticalAlign: "top",
-                      color: "#111827",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {formatConfidence(line.confidenceBand, line.confidenceScore)}
-                  </td>
-                  <td
-                    style={{
-                      padding: "0.9rem 0.75rem",
-                      borderBottom: "1px solid rgba(31, 41, 55, 0.08)",
-                      verticalAlign: "top",
-                      color: "#111827",
-                      textTransform: "capitalize",
-                    }}
-                  >
-                    {line.journalRole}
-                  </td>
-                  <td
-                    style={{
-                      padding: "0.9rem 0.75rem",
-                      borderBottom: "1px solid rgba(31, 41, 55, 0.08)",
-                      verticalAlign: "top",
-                      color: "#4b5563",
-                      lineHeight: 1.6,
-                      minWidth: "16rem",
-                    }}
-                  >
-                    {line.reasoning}
-                  </td>
-                  <td
-                    style={{
-                      padding: "0.9rem 0.75rem",
-                      borderBottom: "1px solid rgba(31, 41, 55, 0.08)",
-                      verticalAlign: "top",
-                    }}
-                  >
-                    <ApprovalActions line={line} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            {/* Left border indicator based on confidence */}
+            <div style={{
+              position: "absolute", left: 0, top: 0, bottom: 0, width: "3px",
+              background: line.mappingSource === "memory" 
+                ? "var(--color-success)" 
+                : line.confidenceBand === "high" ? "var(--color-primary)" : "var(--color-warning)"
+            }} />
+
+            {/* Source Line Detail */}
+            <div style={{ paddingLeft: "1rem" }}>
+              <div style={{ fontSize: "0.8rem", color: "var(--color-outline)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>Extracted Line</div>
+              <strong style={{ display: "block", color: "var(--color-on-surface)", fontSize: "1rem" }}>{line.rawLabel}</strong>
+              <div style={{ marginTop: "0.25rem", color: "var(--color-on-surface-variant)", fontSize: "0.85rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <span>{formatCountryCode(line.countryCode)}</span>
+                <span style={{ color: "var(--color-outline-variant)" }}>|</span>
+                <span>{formatAmount(line.currency, line.amount)}</span>
+              </div>
+            </div>
+
+            {/* Mapped Account Detail */}
+            <div>
+              <div style={{ fontSize: "0.8rem", color: "var(--color-outline)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>Mapped Account</div>
+              <strong style={{ display: "block", color: "var(--color-on-surface)", fontSize: "1rem" }}>
+                {line.selectedAccountCode} {line.selectedAccountName}
+              </strong>
+              <div style={{ marginTop: "0.5rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <span style={{
+                  padding: "0.15rem 0.5rem",
+                  borderRadius: "4px",
+                  background: line.mappingSource === "memory" ? "rgba(100, 255, 150, 0.1)" : "rgba(120, 180, 255, 0.1)",
+                  color: line.mappingSource === "memory" ? "var(--color-success)" : "var(--color-primary)",
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em"
+                }}>
+                  {line.mappingSource === "memory" ? "Memory" : "Engine"}
+                </span>
+                <span style={{ fontSize: "0.85rem", color: "var(--color-on-surface-variant)" }}>
+                  {formatConfidence(line.confidenceBand, line.confidenceScore)}
+                </span>
+                <span style={{ fontSize: "0.85rem", color: "var(--color-outline)", borderLeft: "1px solid var(--color-outline-variant)", paddingLeft: "0.5rem", textTransform: "capitalize" }}>
+                  {line.journalRole}
+                </span>
+              </div>
+            </div>
+
+            {/* AI Reasoning (Takes more space) */}
+            <div>
+               <div style={{ fontSize: "0.8rem", color: "var(--color-outline)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>Engine Reasoning</div>
+               <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--color-on-surface-variant)", lineHeight: 1.5 }}>
+                 {line.reasoning}
+               </p>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+              <ApprovalActions line={line} />
+            </div>
+
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
 
 function formatCountryCode(countryCode: string | null): string {
-  return countryCode ?? "Country unavailable";
+  return countryCode ?? "Global";
 }
 
 function formatAmount(currency: string, amount: number): string {

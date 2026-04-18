@@ -16,6 +16,7 @@ export function UploadForm(): React.JSX.Element {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<ReconcileResultPayload | null>(null);
+  const [filesReady, setFilesReady] = useState({ payroll: false, coa: false });
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
@@ -54,120 +55,68 @@ export function UploadForm(): React.JSX.Element {
     }
   }
 
-  return (
-    <div
-      style={{
-        marginTop: "2rem",
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "grid",
-          gap: "1rem",
-        }}
-      >
-        <UploadField
-          accept=".json,application/json"
-          helperText="Upload the supported Deel G2N payroll JSON file."
-          label="Deel G2N JSON"
-          name="payrollFile"
-        />
-        <UploadField
-          accept=".csv,text/csv"
-          helperText="Upload the supported chart-of-accounts CSV file."
-          label="COA CSV"
-          name="coaFile"
-        />
+  const allFilesReady = filesReady.payroll && filesReady.coa;
 
-        <div
-          style={{
-            display: "grid",
-            gap: "0.75rem",
-          }}
-        >
+  return (
+    <div style={{ marginTop: "1rem" }}>
+      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1.5rem" }}>
+        
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 calc(50% - 0.5rem)" }}>
+            <UploadField
+              accept=".json,application/json"
+              helperText="Deel G2N JSON"
+              label="Payroll Data"
+              name="payrollFile"
+              onChange={(e) => setFilesReady(s => ({ ...s, payroll: !!e.target.files?.length }))}
+              isReady={filesReady.payroll}
+            />
+          </div>
+          <div style={{ flex: "1 1 calc(50% - 0.5rem)" }}>
+            <UploadField
+              accept=".csv,text/csv"
+              helperText="Chart of Accounts"
+              label="Ledger Map"
+              name="coaFile"
+              onChange={(e) => setFilesReady(s => ({ ...s, coa: !!e.target.files?.length }))}
+              isReady={filesReady.coa}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem" }}>
+          <div>
+            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--color-outline)" }}>
+              Requires <code style={{ color: "var(--color-on-surface-variant)", background: "rgba(255,255,255,0.05)", padding: "2px 6px", borderRadius: "4px" }}>GEMINI_API_KEY</code>
+            </p>
+          </div>
           <button
-            disabled={isSubmitting}
+            disabled={isSubmitting || !allFilesReady}
             style={{
               border: "none",
-              borderRadius: "999px",
-              padding: "0.95rem 1.25rem",
+              borderRadius: "8px",
+              padding: "1rem 2rem",
               fontSize: "1rem",
+              fontFamily: "var(--font-engine)",
               fontWeight: 600,
-              background: isSubmitting ? "#d1d5db" : "#1f2937",
-              color: "#f9fafb",
-              cursor: isSubmitting ? "progress" : "pointer",
+              background: isSubmitting || !allFilesReady ? "var(--color-surface-container-high)" : "linear-gradient(135deg, var(--color-primary), var(--color-primary-container))",
+              color: isSubmitting || !allFilesReady ? "var(--color-outline-variant)" : "#0b1326",
+              cursor: isSubmitting ? "progress" : (!allFilesReady ? "not-allowed" : "pointer"),
+              boxShadow: allFilesReady && !isSubmitting ? "0 4px 15px rgba(46, 107, 255, 0.4)" : "none",
+              transition: "all 0.2s ease-in-out",
             }}
             type="submit"
           >
-            {isSubmitting ? "Reconciling..." : "Reconcile"}
+            {isSubmitting ? "Reconciling..." : "Run Reconciliation"}
           </button>
-          <p
-            style={{
-              margin: 0,
-              fontSize: "0.92rem",
-              color: "#6b7280",
-            }}
-          >
-            Server-side reconciliation requires <code>GEMINI_API_KEY</code> or{" "}
-            <code>GOOGLE_API_KEY</code> in the environment.
-          </p>
         </div>
       </form>
 
-      <div
-        style={{
-          marginTop: "1.5rem",
-        }}
-      >
+      <div style={{ marginTop: "3rem" }}>
         {isSubmitting ? <LoadingState /> : null}
         {!isSubmitting && errorMessage ? <ErrorState message={errorMessage} /> : null}
         {!isSubmitting && !errorMessage && result ? (
           <ResultsSummary result={result} />
-        ) : null}
-        {!isSubmitting && !errorMessage && !result ? (
-          <section
-            style={{
-              borderRadius: "22px",
-              border: "1px solid rgba(124, 92, 59, 0.16)",
-              background: "rgba(255, 255, 255, 0.68)",
-              padding: "1.25rem",
-            }}
-          >
-            <p
-              style={{
-                marginTop: 0,
-                marginBottom: "0.45rem",
-                fontSize: "0.85rem",
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "#8b6a45",
-              }}
-            >
-              Ready for the demo flow
-            </p>
-            <h2
-              style={{
-                marginTop: 0,
-                marginBottom: "0.55rem",
-                fontSize: "1.25rem",
-                color: "#1f2937",
-              }}
-            >
-              Upload the supported files to begin.
-            </h2>
-            <p
-              style={{
-                margin: 0,
-                lineHeight: 1.7,
-                color: "#4b5563",
-              }}
-            >
-              Choose one Deel G2N JSON file and one chart-of-accounts CSV file,
-              then run reconciliation to populate mapped lines, anomalies, and
-              both export downloads.
-            </p>
-          </section>
         ) : null}
       </div>
     </div>
@@ -179,6 +128,8 @@ type UploadFieldProps = {
   helperText: string;
   label: string;
   name: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isReady: boolean;
 };
 
 function UploadField({
@@ -186,43 +137,65 @@ function UploadField({
   helperText,
   label,
   name,
+  onChange,
+  isReady,
 }: UploadFieldProps): React.JSX.Element {
   return (
     <label
       style={{
-        display: "grid",
-        gap: "0.5rem",
+        display: "block",
+        position: "relative",
+        background: "var(--color-surface-container-low)",
+        border: `1px solid ${isReady ? "var(--color-primary)" : "var(--color-outline-variant)"}`,
+        borderRadius: "12px",
+        padding: "2rem",
+        cursor: "pointer",
+        transition: "all 0.2s",
+        boxShadow: isReady ? "inset 0 0 0 1px rgba(181, 196, 255, 0.1)" : "none",
+      }}
+      onMouseEnter={(e) => {
+        if (!isReady) e.currentTarget.style.borderColor = "var(--color-outline)";
+      }}
+      onMouseLeave={(e) => {
+        if (!isReady) e.currentTarget.style.borderColor = "var(--color-outline-variant)";
       }}
     >
-      <span
-        style={{
-          fontWeight: 600,
-          color: "#1f2937",
-        }}
-      >
-        {label}
-      </span>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
+        <div style={{ 
+          width: "40px", height: "40px", 
+          borderRadius: "8px", 
+          background: "var(--color-surface-container-highest)",
+          display: "grid", placeItems: "center",
+          color: isReady ? "var(--color-primary)" : "var(--color-on-surface-variant)"
+        }}>
+          {isReady ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.2 15c.7-1.2 1-2.5.7-3.9-.6-2-2.4-3.5-4.4-3.5h-1.2c-.7-3-3.2-5.2-6.2-5.6-3-.3-5.9 1.3-7.3 4-1.2 2.5-1 6.5.5 8.8m8.7-1.6V21"/><path d="M16 16l-4-4-4 4"/></svg>
+          )}
+        </div>
+        <div>
+          <span style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-outline)", marginBottom: "0.25rem" }}>
+            {label}
+          </span>
+          <span style={{ display: "block", fontSize: "1.2rem", fontWeight: 600, color: isReady ? "var(--color-on-surface)" : "var(--color-on-surface-variant)" }}>
+            {isReady ? "Ready to map" : helperText}
+          </span>
+        </div>
+      </div>
+      
       <input
         accept={accept}
         name={name}
         required
+        onChange={onChange}
         style={{
-          borderRadius: "16px",
-          border: "1px solid rgba(31, 41, 55, 0.14)",
-          background: "rgba(255, 255, 255, 0.78)",
-          padding: "0.8rem 1rem",
-          color: "#1f2937",
+          position: "absolute",
+          top: 0, left: 0, right: 0, bottom: 0,
+          opacity: 0, cursor: "pointer"
         }}
         type="file"
       />
-      <span
-        style={{
-          color: "#6b7280",
-          fontSize: "0.92rem",
-        }}
-      >
-        {helperText}
-      </span>
     </label>
   );
 }

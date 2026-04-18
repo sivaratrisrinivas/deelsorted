@@ -53,8 +53,10 @@ export function ApprovalActions({
   return (
     <div
       style={{
-        display: "grid",
-        gap: "0.45rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.5rem",
+        alignItems: "flex-end",
       }}
     >
       <button
@@ -62,50 +64,52 @@ export function ApprovalActions({
         onClick={handleApprove}
         style={{
           border: "none",
-          borderRadius: "999px",
-          padding: "0.7rem 0.9rem",
-          fontSize: "0.88rem",
+          borderRadius: "8px",
+          padding: "0.75rem 1.25rem",
+          fontSize: "0.85rem",
+          fontFamily: "var(--font-engine)",
           fontWeight: 600,
           background: isApproved
-            ? "rgba(5, 150, 105, 0.14)"
+            ? "var(--color-success)"
             : isSubmitting
-              ? "#d1d5db"
-              : "#111827",
-          color: isApproved ? "#047857" : "#f9fafb",
+              ? "var(--color-surface-container-high)"
+              : "var(--color-surface-container-highest)",
+          color: isApproved ? "var(--color-on-surface)" : isSubmitting ? "var(--color-outline-variant)" : "var(--color-on-surface)",
           cursor: isApproved ? "default" : isSubmitting ? "progress" : "pointer",
           whiteSpace: "nowrap",
+          transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+          boxShadow: isApproved ? "0 0 15px rgba(29, 215, 110, 0.3)" : "none",
+          transform: isSubmitting ? "scale(0.98)" : "scale(1)",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem"
         }}
         type="button"
       >
-        {isApproved
-          ? "Approved for reruns"
-          : isSubmitting
-            ? "Saving approval..."
-            : "Approve mapping"}
+        {isApproved ? (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span style={{ color: "#000" }}>Stored in Memory</span>
+          </>
+        ) : isSubmitting ? (
+          "Saving..."
+        ) : (
+          "Approve Mapping"
+        )}
       </button>
-      <span
-        style={{
-          color: isApproved ? "#047857" : "#6b7280",
-          fontSize: "0.8rem",
-          lineHeight: 1.5,
-        }}
-      >
-        {isApproved
-          ? "Stored in local approved memory for future matching."
-          : "Save this confirmed mapping for future runs."}
-      </span>
-      {errorMessage ? (
+
+      {errorMessage && (
         <span
           role="alert"
           style={{
-            color: "#991b1b",
+            color: "var(--color-error)",
             fontSize: "0.8rem",
             lineHeight: 1.5,
           }}
         >
           {errorMessage}
         </span>
-      ) : null}
+      )}
     </div>
   );
 }

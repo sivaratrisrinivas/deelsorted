@@ -134,15 +134,13 @@ describe("Task 11 error states", () => {
       }),
     );
 
-    expect(emptyStateHtml).toContain("Upload the supported files to begin.");
-    expect(emptyStateHtml).toContain("Ready for the demo flow");
+    expect(emptyStateHtml).toContain("Chart of Accounts");
     expect(emptyStateHtml).toContain("Deel G2N JSON");
-    expect(loadingStateHtml).toContain("Reconciling uploads...");
+    expect(loadingStateHtml).toContain("Reconciling the ledger...");
     expect(loadingStateHtml).toContain(
-      "Parsing files, shortlisting accounts, and validating mapping decisions.",
+      "Executing AI-assisted mapping and validating accounting structures.",
     );
-    expect(errorStateHtml).toContain("Reconcile stopped safely");
-    expect(errorStateHtml).toContain("Fix the upload and try again.");
+    expect(errorStateHtml).toContain("Process Interrupted");
     expect(errorStateHtml).toContain("Deel G2N JSON must be valid JSON.");
   });
 });

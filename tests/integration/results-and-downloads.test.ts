@@ -34,19 +34,18 @@ describe("ResultsSummary", () => {
       }),
     );
 
-    expect(html).toContain("Uploads processed successfully.");
+    expect(html).toContain("Analysis Complete");
     expect(html).toContain("Gross Pay");
     expect(html).toContain("5000 Payroll Salaries");
     expect(html).toContain("High (98%)");
     expect(html).toContain("Gross pay is salary expense.");
-    expect(html).toContain("Anomalies");
+    expect(html).toContain("Hard Failures");
     expect(html).toContain("Wage Tax");
     expect(html).toContain("Low confidence mapping");
     expect(html).toContain("Wage tax looks payable, but confidence stayed low.");
-    expect(html).toContain("Download journal CSV");
-    expect(html).toContain("Download audit trail CSV");
-    expect(html).toContain("Approve mapping");
-    expect(html).toContain("Save this confirmed mapping for future runs.");
+    expect(html).toContain("Export Journal CSV");
+    expect(html).toContain("Export Audit Trail");
+    expect(html).toContain("Approve Mapping");
 
     const journalHref = extractDownloadHref(html, "deelsorted-journal.csv");
     const auditHref = extractDownloadHref(html, "deelsorted-audit-trail.csv");

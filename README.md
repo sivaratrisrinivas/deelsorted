@@ -96,6 +96,7 @@ What is already done:
 - the home page lets you upload the supported files, review mapped lines, inspect anomalies, download journal and audit trail CSVs, and approve confirmed mappings
 - malformed or unsupported uploads fail with clear recoverable error messages instead of leaving the UI in an ambiguous state
 - the reconcile form now shows explicit ready, loading, and stopped-safe error states during submission
+- the UI has been completely overhauled with the "Obsidian Ledger" design system, using a high-precision, low-cognitive-load aesthetic with fluid micro-interactions, dark mode tokens, and a split-stream tabular layout for results
 - the results UI shows selected GL account, confidence, reasoning, and whether a mapping came from the model or approved memory
 - approving a mapped line stores it for future reruns of the same normalized concept
 - integration tests cover the results rendering, local approval persistence, approved-memory reuse flow, and invalid upload error states

@@ -7,54 +7,68 @@ export default function Home(): React.JSX.Element {
         minHeight: "100vh",
         display: "grid",
         placeItems: "center",
-        padding: "2rem",
+        padding: "3rem",
+        paddingTop: "6rem",
+        alignItems: "start",
       }}
     >
       <section
         style={{
-          width: "min(720px, 100%)",
-          borderRadius: "28px",
-          padding: "2.5rem",
-          background: "rgba(255, 255, 255, 0.88)",
-          boxShadow: "0 24px 60px rgba(31, 41, 55, 0.12)",
-          backdropFilter: "blur(18px)",
+          width: "min(840px, 100%)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "2rem",
         }}
       >
-        <p
+        <header
           style={{
-            margin: 0,
-            fontSize: "0.875rem",
-            letterSpacing: "0.16em",
-            textTransform: "uppercase",
-            color: "#7c5c3b",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem",
           }}
         >
-          DeelSorted
-        </p>
-        <h1
-          style={{
-            marginTop: "0.75rem",
-            marginBottom: "1rem",
-            fontSize: "clamp(2.5rem, 7vw, 4.25rem)",
-            lineHeight: 0.95,
-            color: "#1f2937",
-          }}
-        >
-          Payroll reconciliation, built for clarity.
-        </h1>
-        <p
-          style={{
-            margin: 0,
-            maxWidth: "46ch",
-            fontSize: "1.125rem",
-            lineHeight: 1.7,
-            color: "#4b5563",
-          }}
-        >
-          Upload the supported payroll JSON and COA CSV, run reconciliation,
-          inspect mapped lines alongside anomalies, and export the journal and
-          audit trail CSVs from the browser.
-        </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
+            <div style={{ width: "12px", height: "12px", background: "var(--color-tertiary)", borderRadius: "50%", boxShadow: "0 0 10px var(--color-tertiary-container)" }} />
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.85rem",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                fontFamily: "var(--font-engine)",
+                color: "var(--color-on-surface-variant)",
+                fontWeight: 600,
+              }}
+            >
+              DeelSorted
+            </p>
+          </div>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "clamp(2.5rem, 6vw, 4rem)",
+              lineHeight: 1.05,
+              fontWeight: 800,
+              color: "var(--color-on-surface)",
+              textShadow: "0 4px 20px rgba(0, 0, 0, 0.4)",
+            }}
+          >
+            Payroll Reconciliation
+          </h1>
+          <p
+            style={{
+              margin: 0,
+              maxWidth: "50ch",
+              fontSize: "1.1rem",
+              lineHeight: 1.6,
+              color: "var(--color-on-surface-variant)",
+              fontFamily: "var(--font-engine)",
+            }}
+          >
+            Drop your Deel G2N and Chart of Accounts to begin.
+          </p>
+        </header>
+
         <UploadForm />
       </section>
     </main>

@@ -14,142 +14,104 @@ const REASON_LABELS: Record<AnomalousPayrollLine["reasonCode"], string> = {
 
 export function AnomalyPanel({
   anomalies,
-}: AnomalyPanelProps): React.JSX.Element {
+}: AnomalyPanelProps): React.JSX.Element | null {
+  if (anomalies.length === 0) return null;
+
   return (
-    <section
-      style={{
-        borderRadius: "22px",
-        border: "1px solid rgba(180, 83, 9, 0.18)",
-        background: "rgba(255, 251, 235, 0.88)",
-        padding: "1.5rem",
-      }}
-    >
-      <div
-        style={{
-          display: "grid",
-          gap: "0.4rem",
-          marginBottom: "1rem",
-        }}
-      >
-        <p
-          style={{
-            margin: 0,
-            fontSize: "0.85rem",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: "#b45309",
-          }}
-        >
-          Anomalies
+    <section>
+      <div style={{ marginBottom: "1rem" }}>
+        <h3 style={{ 
+          margin: 0, 
+          fontSize: "1.2rem", 
+          fontFamily: "var(--font-engine)", 
+          color: "var(--color-error)",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem"
+        }}>
+          <div style={{ 
+            width: "8px", height: "8px", borderRadius: "50%", 
+            background: "var(--color-error)",
+            boxShadow: "0 0 8px var(--color-error)"
+          }} />
+          Hard Failures
+          <span style={{ 
+            background: "var(--color-error-container)", 
+            color: "var(--color-on-error-container)",
+            padding: "2px 8px", borderRadius: "12px", fontSize: "0.8rem", marginLeft: "0.5rem"
+          }}>
+            {anomalies.length}
+          </span>
+        </h3>
+        <p style={{ margin: "0.25rem 0 0", fontSize: "0.9rem", color: "var(--color-on-surface-variant)" }}>
+          The engine could not safely map these lines. Manual intervention required.
         </p>
-        <h2
-          style={{
-            margin: 0,
-            color: "#111827",
-            fontSize: "1.5rem",
-          }}
-        >
-          Keep uncertain lines visible for review.
-        </h2>
       </div>
 
-      {anomalies.length === 0 ? (
-        <p
-          style={{
-            margin: 0,
-            color: "#6b7280",
-          }}
-        >
-          No anomalies were detected in this run.
-        </p>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gap: "0.9rem",
-          }}
-        >
-          {anomalies.map((line) => (
-            <article
-              key={line.lineId}
-              style={{
-                borderRadius: "18px",
-                border: "1px solid rgba(180, 83, 9, 0.16)",
-                background: "rgba(255, 255, 255, 0.72)",
-                padding: "1rem",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  justifyContent: "space-between",
-                  gap: "0.75rem",
-                  alignItems: "center",
-                }}
-              >
+      <div style={{ display: "grid", gap: "0.5rem" }}>
+        {anomalies.map((line) => (
+          <article
+            key={line.lineId}
+            style={{
+              background: "rgba(147, 0, 10, 0.05)",
+              border: "1px solid var(--color-error-container)",
+              borderRadius: "12px",
+              padding: "1.25rem",
+              position: "relative",
+              overflow: "hidden"
+            }}
+          >
+            <div style={{
+              position: "absolute", left: 0, top: 0, bottom: 0, width: "3px",
+              background: "var(--color-error)"
+            }} />
+            
+            <div style={{ paddingLeft: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem" }}>
                 <div>
-                  <strong
-                    style={{
-                      display: "block",
-                      color: "#111827",
-                    }}
-                  >
-                    {line.rawLabel}
-                  </strong>
-                  <span
-                    style={{
-                      color: "#6b7280",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    {formatCountryCode(line.countryCode)} · {line.normalizedCode} ·{" "}
-                    {formatAmount(line.currency, line.amount)}
-                  </span>
+                  <div style={{ fontSize: "0.8rem", color: "var(--color-error)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>Unmapped Source Line</div>
+                  <strong style={{ display: "block", color: "var(--color-on-surface)", fontSize: "1rem" }}>{line.rawLabel}</strong>
+                  <div style={{ marginTop: "0.25rem", color: "var(--color-on-surface-variant)", fontSize: "0.85rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    <span>{formatCountryCode(line.countryCode)}</span>
+                    <span style={{ color: "var(--color-outline-variant)" }}>|</span>
+                    <span>{line.normalizedCode}</span>
+                    <span style={{ color: "var(--color-outline-variant)" }}>|</span>
+                    <span>{formatAmount(line.currency, line.amount)}</span>
+                  </div>
                 </div>
-                <span
-                  style={{
+                
+                <div style={{ textAlign: "right" }}>
+                  <span style={{
                     display: "inline-block",
-                    padding: "0.35rem 0.65rem",
-                    borderRadius: "999px",
-                    background: "rgba(180, 83, 9, 0.12)",
-                    color: "#92400e",
-                    fontWeight: 700,
-                    fontSize: "0.82rem",
-                  }}
-                >
-                  {REASON_LABELS[line.reasonCode]}
-                </span>
+                    padding: "0.2rem 0.6rem",
+                    borderRadius: "4px",
+                    background: "var(--color-error-container)",
+                    color: "var(--color-on-error-container)",
+                    fontWeight: 600,
+                    fontSize: "0.8rem",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em"
+                  }}>
+                    {REASON_LABELS[line.reasonCode]}
+                  </span>
+                  {line.confidenceScore !== undefined && (
+                    <div style={{ marginTop: "0.5rem", fontSize: "0.85rem", color: "var(--color-error)" }}>
+                      AI Confidence: {formatConfidence(line.confidenceScore)}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <p
-                style={{
-                  marginTop: "0.85rem",
-                  marginBottom: 0,
-                  color: "#4b5563",
-                  lineHeight: 1.6,
-                }}
-              >
-                {line.reasoning}
-              </p>
-
-              {line.confidenceScore !== undefined ? (
-                <p
-                  style={{
-                    marginTop: "0.75rem",
-                    marginBottom: 0,
-                    color: "#92400e",
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                  }}
-                >
-                  Confidence: {formatConfidence(line.confidenceScore)}
+              <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid var(--color-error-container)" }}>
+                <div style={{ fontSize: "0.8rem", color: "var(--color-error)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>Diagnostic Output</div>
+                <p style={{ margin: 0, color: "var(--color-on-surface-variant)", fontSize: "0.9rem", lineHeight: 1.5 }}>
+                  {line.reasoning}
                 </p>
-              ) : null}
-            </article>
-          ))}
-        </div>
-      )}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
     </section>
   );
 }
@@ -159,7 +121,7 @@ function formatAmount(currency: string, amount: number): string {
 }
 
 function formatCountryCode(countryCode: string | null): string {
-  return countryCode ?? "Country unavailable";
+  return countryCode ?? "Global";
 }
 
 function formatConfidence(confidenceScore: number): string {

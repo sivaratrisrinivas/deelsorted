@@ -4,43 +4,70 @@ export function LoadingState(): React.JSX.Element {
       aria-live="polite"
       role="status"
       style={{
-        borderRadius: "22px",
-        border: "1px solid rgba(124, 92, 59, 0.16)",
-        background: "rgba(255, 255, 255, 0.78)",
-        padding: "1.25rem",
+        borderRadius: "16px",
+        background: "var(--color-surface-container-low)",
+        padding: "2rem",
+        display: "flex",
+        alignItems: "center",
+        gap: "1.5rem",
+        border: "1px solid var(--color-outline-variant)",
       }}
     >
-      <p
-        style={{
-          marginTop: 0,
-          marginBottom: "0.45rem",
-          fontSize: "0.85rem",
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-          color: "#8b6a45",
+      <div 
+        style={{ 
+          position: "relative",
+          width: "48px", 
+          height: "48px", 
+          display: "grid", 
+          placeItems: "center" 
         }}
       >
-        Reconcile in progress
-      </p>
-      <h2
-        style={{
-          marginTop: 0,
-          marginBottom: "0.55rem",
-          fontSize: "1.25rem",
-          color: "#1f2937",
-        }}
-      >
-        Reconciling uploads...
-      </h2>
-      <p
-        style={{
-          margin: 0,
-          lineHeight: 1.7,
-          color: "#4b5563",
-        }}
-      >
-        Parsing files, shortlisting accounts, and validating mapping decisions.
-      </p>
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: "50%",
+          border: "2px solid var(--color-surface-container-high)",
+        }} />
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: "50%",
+          border: "2px solid var(--color-primary)",
+          borderTopColor: "transparent",
+          animation: "spin 1s linear infinite",
+        }}>
+          <style>{`
+            @keyframes spin { 
+              100% { transform: rotate(360deg); } 
+            }
+          `}</style>
+        </div>
+      </div>
+      
+      <div>
+        <h2
+          style={{
+            marginTop: 0,
+            marginBottom: "0.45rem",
+            fontSize: "1.1rem",
+            color: "var(--color-on-surface)",
+            fontFamily: "var(--font-engine)",
+            fontWeight: 600,
+          }}
+        >
+          Reconciling the ledger...
+        </h2>
+        <p
+          style={{
+            margin: 0,
+            fontSize: "0.9rem",
+            color: "var(--color-on-surface-variant)",
+            fontFamily: "var(--font-engine)",
+          }}
+        >
+          Executing AI-assisted mapping and validating accounting structures.
+        </p>
+      </div>
     </section>
   );
 }
