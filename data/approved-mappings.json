@@ -1,1 +1,57 @@
-[]
+[
+  {
+    "normalizedCode": "DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION",
+    "countryCode": null,
+    "selectedAccountId": "liab-employee-tax",
+    "journalRole": "liability",
+    "confidenceScore": 0.95,
+    "confidenceBand": "high",
+    "rationale": "The concept 'INSS Employee Contribution' refers to an employee's social security tax deduction. The account 'Employee Tax Withholding' (liab-employee-tax) is specifically for employee payroll tax liability, which is a direct match.",
+    "status": "confirmed",
+    "approvedAt": "2026-04-18T20:56:35Z"
+  },
+  {
+    "normalizedCode": "DEDUCTIONS_WAGE_TAX",
+    "countryCode": null,
+    "selectedAccountId": "liab-employee-tax",
+    "journalRole": "liability",
+    "confidenceScore": 0.95,
+    "confidenceBand": "high",
+    "rationale": "The payroll concept 'Wage Tax' for 'employee' is a direct match for 'Employee Tax Withholding' which is an 'Employee payroll tax liability'.",
+    "status": "confirmed",
+    "approvedAt": "2026-04-18T20:58:47Z"
+  },
+  {
+    "normalizedCode": "EARNINGS_GROSS_PAY",
+    "countryCode": null,
+    "selectedAccountId": "exp-payroll-salary",
+    "journalRole": "expense",
+    "confidenceScore": 0.95,
+    "confidenceBand": "high",
+    "rationale": "The concept 'Gross Pay' is a direct match for 'Payroll Salaries', which is described as 'Gross salary expense', with high relevance in matched tokens and aliases.",
+    "status": "confirmed",
+    "approvedAt": "2026-04-18T20:34:56Z"
+  },
+  {
+    "normalizedCode": "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
+    "countryCode": null,
+    "selectedAccountId": "exp-payroll-tax",
+    "journalRole": "expense",
+    "confidenceScore": 0.95,
+    "confidenceBand": "high",
+    "rationale": "The concept 'Employer National Insurance' is a direct match for 'Payroll Taxes' and the account description 'Employer payroll tax expense' explicitly covers this type of cost.",
+    "status": "confirmed",
+    "approvedAt": "2026-04-18T20:56:31Z"
+  },
+  {
+    "normalizedCode": "NET_PAY_NET_SALARY",
+    "countryCode": null,
+    "selectedAccountId": "liab-net-pay",
+    "journalRole": "liability",
+    "confidenceScore": 0.95,
+    "confidenceBand": "high",
+    "rationale": "The concept 'Net Salary' directly matches the 'Net Pay Liability' account which is described as 'Net salary payable'. The tokens 'NET', 'PAY', and 'SALARY' are all strongly aligned with this account.",
+    "status": "confirmed",
+    "approvedAt": "2026-04-18T20:58:44Z"
+  }
+]

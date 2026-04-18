@@ -10,6 +10,10 @@ DeelSorted is a demo-first payroll reconciliation app. It accepts a supported De
 - journal math, balancing, anomaly handling, and CSV exports stay deterministic
 - approved mappings are only reused after explicit human approval
 
+## Current UI
+
+![DeelSorted sample run](docs/assets/deelsorted-sample-run.png)
+
 ## What it does
 
 Deel payroll exports use payroll and tax labels that accountants usually do not work with directly. A few examples:
@@ -53,6 +57,8 @@ The first demo is intentionally narrow.
 7. The app shows mapped lines, confidence, anomaly lines, and a balanced journal by currency.
 8. The user downloads a journal CSV and an audit trail CSV.
 9. Approved mapping decisions can be reused later.
+
+The browser UI also includes a `Use sample files` path that loads the checked-in demo payroll and COA fixtures for a one-click local trial run.
 
 ## Supported inputs
 
@@ -176,12 +182,18 @@ GOOGLE_API_KEY=your_key_here
 Demo fixtures live at:
 
 - `fixtures/payroll-sample.json`
+- `fixtures/payroll-large-sample.json`
 - `fixtures/coa-sample.csv`
 - `fixtures/coa-alias-sample.csv`
+- `fixtures/coa-large-sample.csv`
 
 `fixtures/payroll-sample.json` is the schema-faithful Deel G2N mock used by the checked-in runtime today.
 
+`fixtures/payroll-large-sample.json` is a larger schema-faithful Deel G2N mock with `150` contracts and `1200` item lines for load-style demos and parser validation.
+
 `fixtures/payroll-legacy-sample.json` remains in the repo as a preserved reference fixture, but it is no longer the supported upload path after the parser cutover slice.
+
+`fixtures/coa-large-sample.csv` is the matching broader canonical COA fixture for the larger payroll sample.
 
 Fixture field details are documented in `fixtures/README.md`.
 
@@ -201,9 +213,9 @@ Today the local demo supports this browser-visible slice:
 
 1. Start the app with `npm run dev`.
 2. Open `http://localhost:3000`.
-3. Upload `fixtures/payroll-sample.json` as the `Deel G2N JSON` file.
-4. Upload `fixtures/coa-sample.csv` or `fixtures/coa-alias-sample.csv`.
-5. Click `Reconcile`.
+3. Either click `Use sample files` for the built-in demo path, or upload `fixtures/payroll-sample.json` as the `Deel G2N JSON` file.
+4. If you choose the manual path, upload `fixtures/coa-sample.csv` or `fixtures/coa-alias-sample.csv`.
+5. Run reconciliation.
 6. Review the selected GL account, confidence, journal role, and reasoning for each mapped line.
 7. Review anomalies in a separate panel with a human-readable reason.
 8. Download the journal CSV and audit trail CSV for the completed run.

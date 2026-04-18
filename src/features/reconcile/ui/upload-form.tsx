@@ -12,6 +12,13 @@ type ErrorResponse = {
   error?: string;
 };
 
+type DemoFixturesResponse = {
+  payrollFileName: string;
+  payrollText: string;
+  coaFileName: string;
+  coaText: string;
+};
+
 export function UploadForm(): React.JSX.Element {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,32 +30,47 @@ export function UploadForm(): React.JSX.Element {
   ): Promise<void> {
     event.preventDefault();
 
+    await submitReconciliation(new FormData(event.currentTarget));
+  }
+
+  async function handleUseSampleFiles(): Promise<void> {
     setErrorMessage(null);
     setResult(null);
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/reconcile", {
-        method: "POST",
-        body: new FormData(event.currentTarget),
-      });
-      const payload = (await response.json()) as
-        | ErrorResponse
-        | ReconcileResultPayload;
+      const response = await fetch("/api/demo-fixtures");
+      const payload = (await response.json()) as ErrorResponse | DemoFixturesResponse;
 
       if (!response.ok) {
         throw new Error(
           "error" in payload && typeof payload.error === "string"
             ? payload.error
-            : "Reconciliation failed.",
+            : "Unable to load sample files.",
         );
       }
 
-      setResult(payload as ReconcileResultPayload);
+      const sampleFiles = payload as DemoFixturesResponse;
+      const formData = new FormData();
+
+      formData.set(
+        "payrollFile",
+        new File([sampleFiles.payrollText], sampleFiles.payrollFileName, {
+          type: "application/json",
+        }),
+      );
+      formData.set(
+        "coaFile",
+        new File([sampleFiles.coaText], sampleFiles.coaFileName, {
+          type: "text/csv",
+        }),
+      );
+
+      await submitReconciliation(formData);
     } catch (error) {
       setResult(null);
       setErrorMessage(
-        error instanceof Error ? error.message : "Reconciliation failed.",
+        error instanceof Error ? error.message : "Unable to load sample files.",
       );
     } finally {
       setIsSubmitting(false);
@@ -60,7 +82,6 @@ export function UploadForm(): React.JSX.Element {
   return (
     <div style={{ marginTop: "1rem" }}>
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1.5rem" }}>
-        
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
           <div style={{ flex: "1 1 calc(50% - 0.5rem)" }}>
             <UploadField
@@ -89,26 +110,52 @@ export function UploadForm(): React.JSX.Element {
             <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--color-outline)" }}>
               Requires <code style={{ color: "var(--color-on-surface-variant)", background: "rgba(255,255,255,0.05)", padding: "2px 6px", borderRadius: "4px" }}>GEMINI_API_KEY</code>
             </p>
+            <p style={{ margin: "0.45rem 0 0", fontSize: "0.85rem", color: "var(--color-outline)" }}>
+              Or use the built-in demo fixtures for a one-click sample run.
+            </p>
           </div>
-          <button
-            disabled={isSubmitting || !allFilesReady}
-            style={{
-              border: "none",
-              borderRadius: "8px",
-              padding: "1rem 2rem",
-              fontSize: "1rem",
-              fontFamily: "var(--font-engine)",
-              fontWeight: 600,
-              background: isSubmitting || !allFilesReady ? "var(--color-surface-container-high)" : "linear-gradient(135deg, var(--color-primary), var(--color-primary-container))",
-              color: isSubmitting || !allFilesReady ? "var(--color-outline-variant)" : "#0b1326",
-              cursor: isSubmitting ? "progress" : (!allFilesReady ? "not-allowed" : "pointer"),
-              boxShadow: allFilesReady && !isSubmitting ? "0 4px 15px rgba(46, 107, 255, 0.4)" : "none",
-              transition: "all 0.2s ease-in-out",
-            }}
-            type="submit"
-          >
-            {isSubmitting ? "Reconciling..." : "Run Reconciliation"}
-          </button>
+          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button
+              disabled={isSubmitting}
+              onClick={() => {
+                void handleUseSampleFiles();
+              }}
+              style={{
+                border: "1px solid var(--color-outline-variant)",
+                borderRadius: "8px",
+                padding: "1rem 1.5rem",
+                fontSize: "0.95rem",
+                fontFamily: "var(--font-engine)",
+                fontWeight: 600,
+                background: "var(--color-surface-container-low)",
+                color: isSubmitting ? "var(--color-outline-variant)" : "var(--color-on-surface)",
+                cursor: isSubmitting ? "progress" : "pointer",
+                transition: "all 0.2s ease-in-out",
+              }}
+              type="button"
+            >
+              Use sample files
+            </button>
+            <button
+              disabled={isSubmitting || !allFilesReady}
+              style={{
+                border: "none",
+                borderRadius: "8px",
+                padding: "1rem 2rem",
+                fontSize: "1rem",
+                fontFamily: "var(--font-engine)",
+                fontWeight: 600,
+                background: isSubmitting || !allFilesReady ? "var(--color-surface-container-high)" : "linear-gradient(135deg, var(--color-primary), var(--color-primary-container))",
+                color: isSubmitting || !allFilesReady ? "var(--color-outline-variant)" : "#0b1326",
+                cursor: isSubmitting ? "progress" : (!allFilesReady ? "not-allowed" : "pointer"),
+                boxShadow: allFilesReady && !isSubmitting ? "0 4px 15px rgba(46, 107, 255, 0.4)" : "none",
+                transition: "all 0.2s ease-in-out",
+              }}
+              type="submit"
+            >
+              {isSubmitting ? "Reconciling..." : "Run Reconciliation"}
+            </button>
+          </div>
         </div>
       </form>
 
@@ -121,6 +168,40 @@ export function UploadForm(): React.JSX.Element {
       </div>
     </div>
   );
+
+  async function submitReconciliation(formData: FormData): Promise<void> {
+    setErrorMessage(null);
+    setResult(null);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/reconcile", {
+        method: "POST",
+        body: formData,
+      });
+      const payload = (await response.json()) as
+        | ErrorResponse
+        | ReconcileResultPayload;
+
+      if (!response.ok) {
+        throw new Error(
+          "error" in payload && typeof payload.error === "string"
+            ? payload.error
+            : "Reconciliation failed.",
+        );
+      }
+
+      setResult(payload as ReconcileResultPayload);
+    } catch (error) {
+      setResult(null);
+      setErrorMessage(
+        error instanceof Error ? error.message : "Reconciliation failed.",
+      );
+      throw error;
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 }
 
 type UploadFieldProps = {

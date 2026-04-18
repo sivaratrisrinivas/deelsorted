@@ -1,0 +1,15 @@
+accountId,accountCode,name,description,type,normalSide,aliases
+exp-payroll-salary,5000,Payroll Salaries,Base salary and fixed payroll expense,expense,debit,gross pay|salary|base salary|basic salary|salario base|bruttogehalt|salaire brut|bruto salaris|wynagrodzenie zasadnicze|retribuzione lorda
+exp-variable-pay,5010,Variable Pay Expense,"Bonus, commission, and incentive expense",expense,debit,bonus|performance bonus|commission|comissao mensal|prime de performance|bono productividad|premia miesieczna|premio variabile
+exp-allowances,5020,Allowances Expense,Allowances and work stipend expense,expense,debit,allowance|internet allowance|house rent allowance|transport allowance|meal voucher|vales de despensa|plus transporte|thuiswerkvergoeding|indennita smart working
+exp-overtime-holiday,5030,Overtime And Holiday Pay,"Overtime, holiday, and shift premium expense",expense,debit,overtime|shift premium|holiday pay|schichtzulage|vakantiegeld
+exp-employer-tax,5400,Employer Payroll Taxes,Employer payroll tax and social charge expense,expense,debit,employer national insurance|employer social insurance|social insurance|social security employer|employer provident fund|imss patronal|inss patronal|seguridad social empresa|werkgeverspremies|cotisations sociales patronales|contributi datore di lavoro|skladki pracodawcy zus
+exp-benefits,6100,Employee Benefits,"Insurance, vouchers, and supplemental benefit expense",expense,debit,benefits|health insurance|private health insurance|medical reimbursement|supplemental medical cover|mutuelle sante|seguro medico privado|zorgverzekering werkgever|pakiet medyczny|assicurazione sanitaria
+liab-employee-income-tax,2210,Employee Tax Withholding,Employee income tax withholding liability,liability,credit,withholding|employee tax|income tax|wage tax|paye|irrf withholding|isr withholding|irpf retention|loonheffing|zaliczka pit|ritenuta irpef|tds withholding|prelevement a la source
+liab-employee-social-tax,2215,Employee Social Security Withholding,Employee social tax and statutory contribution liability,liability,credit,social security|employee social security|employee pension contribution|provident fund employee contribution|employee pension insurance|imss employee contribution|inss employee contribution|seguridad social empleado|pensioen werknemer|contributi dipendente|skladki pracownika zus|retraite salariale
+liab-net-pay,2220,Net Pay Liability,Net salary payable liability,liability,credit,net pay|net salary|salary payable|wages payable
+liab-benefits-payable,2230,Benefits Payable,Benefits and voucher payable liability,liability,credit,meal voucher|vale refeicao|vales de despensa|benefits payable
+liab-payroll-clearing,2200,Payroll Clearing,Payroll clearing and bridge liability,liability,credit,clearing|payroll payable|bridge
+asset-prepaids,1300,Prepaid Benefits,Prepaid employee benefits asset,asset,debit,prepaid benefits|insurance prepaid
+equity-rounding,3900,Payroll Rounding Reserve,Equity reserve for payroll rounding differences,equity,credit,rounding reserve
+rev-payroll-recovery,7800,Payroll Cost Recovery,Recovered payroll costs and recharge revenue,revenue,credit,cost recovery|payroll recharge
