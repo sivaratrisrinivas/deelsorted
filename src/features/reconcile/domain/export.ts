@@ -102,7 +102,7 @@ export function exportAuditTrailCsv(rows: readonly AuditTrailRow[]): string {
     rows.map((row) => ({
       lineId: row.lineId,
       sourceRef: row.sourceRef,
-      countryCode: row.countryCode,
+      countryCode: row.countryCode ?? "",
       currency: row.currency,
       rawCode: row.rawCode,
       rawLabel: row.rawLabel,

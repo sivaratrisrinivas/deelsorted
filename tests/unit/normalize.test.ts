@@ -9,7 +9,7 @@ import {
   normalizePayrollCode,
   tokenizePayrollCode,
 } from "../../src/features/reconcile/domain/normalize";
-import type { SupportedPayrollItem } from "../../src/types/reconcile";
+import type { DeelG2nContract, DeelG2nItem } from "../../src/types/reconcile";
 
 function loadFixture(name: string): string {
   return readFileSync(join(process.cwd(), "fixtures", name), "utf8");
@@ -31,37 +31,58 @@ describe("normalize", () => {
   });
 
   it("preserves raw source values alongside normalized values", () => {
-    const item: SupportedPayrollItem = {
-      itemId: "br-001",
-      workerId: "worker-br-001",
-      workerName: "Carla Souza",
-      countryCode: "BR",
+    const contract: DeelG2nContract = {
+      contract_oid: "contract-br-001",
       currency: "BRL",
-      category: "employee_taxes",
-      code: "BR_INSS_Empregado",
+      payment_data: {
+        conversion_rate: "1.00",
+        payment_currency: "BRL",
+      },
+      items: [],
+    };
+    const item: DeelG2nItem = {
       label: "INSS Employee Contribution",
-      amount: 540.44,
+      value: 540.44,
+      category: "Taxes",
+      sub_category: "Social Security",
+      category_group: "DEDUCTIONS",
     };
 
-    const line = buildPayrollLine("demo-april-2026", item);
+    const line = buildPayrollLine(contract, item, 0);
 
-    expect(line.rawCode).toBe("BR_INSS_Empregado");
+    expect(line.lineId).toBe("contract-br-001:item-1");
+    expect(line.sourceRef).toBe("contract-br-001");
+    expect(line.countryCode).toBeNull();
+    expect(line.rawCode).toBe("INSS Employee Contribution");
     expect(line.rawLabel).toBe("INSS Employee Contribution");
-    expect(line.normalizedCode).toBe("BR_INSS_EMPREGADO");
-    expect(line.tokens).toEqual(["BR", "INSS", "EMPREGADO"]);
+    expect(line.normalizedCode).toBe("DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION");
+    expect(line.tokens).toEqual([
+      "DEDUCTIONS",
+      "INSS",
+      "EMPLOYEE",
+      "CONTRIBUTION",
+      "TAXES",
+      "SOCIAL",
+      "SECURITY",
+    ]);
+    expect(line.rawCategory).toBe("Taxes");
+    expect(line.rawSubCategory).toBe("Social Security");
+    expect(line.rawCategoryGroup).toBe("DEDUCTIONS");
     expect(line.partySide).toBe("employee");
   });
 
-  it("groups repeated country-specific codes into a shared concept key", () => {
-    const lines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
+  it("groups repeated G2N concepts into a shared concept key", () => {
+    const lines = parsePayrollJson(loadFixture("payroll-sample.json"));
     const grouped = groupPayrollLinesByConcept(lines);
 
-    expect(grouped.get("GB::UK_NI_EMPLOYER_CONTRIBUTION_TIER_1")).toHaveLength(
-      2,
-    );
-    expect(grouped.get("BR::BR_INSS_EMPREGADO")).toHaveLength(2);
+    expect(
+      grouped.get("NO_COUNTRY::EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1"),
+    ).toHaveLength(2);
+    expect(
+      grouped.get("NO_COUNTRY::DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION"),
+    ).toHaveLength(2);
     expect(getPayrollConceptKey(lines[1]!)).toBe(
-      "GB::UK_NI_EMPLOYER_CONTRIBUTION_TIER_1",
+      "NO_COUNTRY::EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
     );
   });
 });

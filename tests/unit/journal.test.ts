@@ -67,18 +67,18 @@ function getCurrencyBalance(
 
 describe("journal", () => {
   it("groups journal rows by currency and balances each currency", () => {
-    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
     const byId = new Map(accounts.map((account) => [account.accountId, account]));
     const reconciledLines: ReconciledPayrollLine[] = [
       createMappedLine(payrollLines[0]!, byId.get("exp-payroll-salary")!),
       createMappedLine(payrollLines[1]!, byId.get("exp-payroll-tax")!),
-      createMappedLine(payrollLines[2]!, byId.get("exp-payroll-tax")!),
-      createMappedLine(payrollLines[3]!, byId.get("liab-employee-tax")!),
+      createMappedLine(payrollLines[2]!, byId.get("liab-net-pay")!),
+      createMappedLine(payrollLines[3]!, byId.get("exp-payroll-tax")!),
       createMappedLine(payrollLines[4]!, byId.get("liab-employee-tax")!),
-      createMappedLine(payrollLines[5]!, byId.get("exp-payroll-tax")!),
-      createMappedLine(payrollLines[6]!, byId.get("liab-employee-tax")!),
-      createMappedLine(payrollLines[7]!, byId.get("liab-net-pay")!),
+      createMappedLine(payrollLines[5]!, byId.get("liab-employee-tax")!),
+      createMappedLine(payrollLines[6]!, byId.get("exp-payroll-tax")!),
+      createMappedLine(payrollLines[7]!, byId.get("liab-employee-tax")!),
     ];
 
     const result = buildJournalResult({
@@ -102,10 +102,10 @@ describe("journal", () => {
   });
 
   it("separates anomalies from mapped lines instead of forcing them into the journal", () => {
-    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
     const byId = new Map(accounts.map((account) => [account.accountId, account]));
-    const anomaly = createAnomalyLine(payrollLines[6]!);
+    const anomaly = createAnomalyLine(payrollLines[7]!);
 
     const result = buildJournalResult({
       reconciledLines: [
@@ -116,7 +116,7 @@ describe("journal", () => {
     });
 
     expect(result.anomalies).toEqual([anomaly]);
-    expect(result.journalRows.some((row) => row.memo.includes("DE_Lohnsteuer"))).toBe(
+    expect(result.journalRows.some((row) => row.memo.includes("Wage Tax"))).toBe(
       false,
     );
     expect(result.journalRows).toHaveLength(2);

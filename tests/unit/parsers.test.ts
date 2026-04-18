@@ -16,27 +16,30 @@ describe("parsers", () => {
     expect(DeelG2nReportSchema.safeParse(report).success).toBe(true);
   });
 
-  it("parses the current legacy payroll fixture into canonical payroll lines", () => {
-    const lines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
+  it("parses the Deel G2N payroll fixture into canonical payroll lines", () => {
+    const lines = parsePayrollJson(loadFixture("payroll-sample.json"));
 
     expect(lines).toHaveLength(8);
     expect(lines[0]).toEqual({
-      lineId: "uk-001",
-      sourceRef: "demo-april-2026:uk-001",
-      countryCode: "GB",
+      lineId: "contract-gb-001:item-1",
+      sourceRef: "contract-gb-001",
+      countryCode: null,
       currency: "GBP",
-      rawCode: "UK_Gross_Pay",
+      rawCode: "Gross Pay",
       rawLabel: "Gross Pay",
-      normalizedCode: "UK_GROSS_PAY",
-      tokens: ["UK", "GROSS", "PAY"],
+      normalizedCode: "EARNINGS_GROSS_PAY",
+      tokens: ["EARNINGS", "GROSS", "PAY", "TAXABLE", "SALARY"],
       amount: 4200,
       section: "earnings",
       partySide: "employee",
+      rawCategory: "Gross (Taxable)",
+      rawSubCategory: "Salary",
+      rawCategoryGroup: "EARNINGS",
     });
-    expect(lines[1]?.sourceRef).toBe("demo-april-2026:uk-002");
-    expect(lines[1]?.rawCode).toBe("UK_NI_Employer_Contribution_Tier_1");
+    expect(lines[1]?.sourceRef).toBe("contract-gb-001");
+    expect(lines[1]?.rawCode).toBe("Employer National Insurance Tier 1");
     expect(lines[1]?.normalizedCode).toBe(
-      "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1",
+      "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
     );
   });
 

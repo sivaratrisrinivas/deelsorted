@@ -15,7 +15,7 @@ function loadFixture(name: string): string {
 describe("retrieval and memory", () => {
   it("shortlists the most relevant COA accounts for a payroll concept", async () => {
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
-    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
     const candidateProvider = createLocalCandidateProvider(accounts);
 
     const employerTaxCandidates = await candidateProvider.shortlistCandidates({
@@ -23,7 +23,7 @@ describe("retrieval and memory", () => {
       limit: 3,
     });
     const netPayCandidates = await candidateProvider.shortlistCandidates({
-      concept: payrollLines[7]!,
+      concept: payrollLines[2]!,
       limit: 3,
     });
 
@@ -50,8 +50,8 @@ describe("retrieval and memory", () => {
     const memoryFilePath = join(tempDirectory, "approved-mappings.json");
     const approvals: Approval[] = [
       {
-        normalizedCode: "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1",
-        countryCode: "GB",
+        normalizedCode: "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
+        countryCode: null,
         selectedAccountId: "exp-payroll-tax",
         journalRole: "expense",
         confidenceScore: 0.98,
@@ -68,8 +68,8 @@ describe("retrieval and memory", () => {
 
     await expect(
       memory.getApprovedMapping({
-        countryCode: "GB",
-        normalizedCode: "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1",
+        countryCode: null,
+        normalizedCode: "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
       }),
     ).resolves.toMatchObject({
       selectedAccountId: "exp-payroll-tax",
@@ -77,8 +77,8 @@ describe("retrieval and memory", () => {
     });
     await expect(
       memory.getApprovedMapping({
-        countryCode: "BR",
-        normalizedCode: "BR_INSS_EMPREGADO",
+        countryCode: null,
+        normalizedCode: "DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION",
       }),
     ).resolves.toBeNull();
   });

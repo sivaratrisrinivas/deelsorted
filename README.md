@@ -36,7 +36,7 @@ The goal of DeelSorted is to make the hard part easier without hiding uncertaint
 
 The first demo is intentionally narrow.
 
-1. Upload one supported Deel-style payroll JSON file.
+1. Upload one supported Deel G2N-style payroll JSON file.
 2. Upload one supported chart of accounts CSV file.
 3. Click `Reconcile`.
 4. The app cleans up the payroll labels into a simpler internal form.
@@ -101,8 +101,9 @@ What is already done:
 - integration tests cover the results rendering, local approval persistence, approved-memory reuse flow, and invalid upload error states
 - the app builds and serves locally in WSL
 - the workspace-root warning from the unrelated WSL `pnpm-lock.yaml` is handled in `next.config.ts`
-- the repo now includes explicit Deel G2N schemas plus a schema-faithful mock G2N fixture for the next ingestion phase
-- the live parser and browser flow still intentionally use `fixtures/payroll-legacy-sample.json` until the next G2N normalization slice lands
+- the repo now includes explicit Deel G2N schemas plus a schema-faithful mock G2N fixture
+- the live payroll parser now normalizes the checked-in G2N fixture into the existing deterministic reconcile flow
+- the upload UI copy is still generically labeled `Payroll JSON` until the next upload-UX wording slice lands
 
 ## How to run the project
 
@@ -127,11 +128,12 @@ GOOGLE_API_KEY=your_key_here
 
 Demo fixtures live at:
 
-- `fixtures/payroll-legacy-sample.json` for the current checked-in demo runtime
 - `fixtures/payroll-sample.json`
 - `fixtures/coa-sample.csv`
 
-`fixtures/payroll-sample.json` is now reserved for the schema-faithful Deel G2N mock used by the next ingestion slice. The runtime parser cutover lands in a follow-up change, so the current browser demo should still use `fixtures/payroll-legacy-sample.json`.
+`fixtures/payroll-sample.json` is the schema-faithful Deel G2N mock used by the checked-in runtime today.
+
+`fixtures/payroll-legacy-sample.json` remains in the repo as a preserved reference fixture, but it is no longer the supported upload path after the parser cutover slice.
 
 Fixture field details are documented in `fixtures/README.md`.
 
@@ -149,7 +151,7 @@ Today the local demo supports this browser-visible slice:
 
 1. Start the app with `npm run dev`.
 2. Open `http://localhost:3000`.
-3. Upload `fixtures/payroll-legacy-sample.json`.
+3. Upload `fixtures/payroll-sample.json`.
 4. Upload `fixtures/coa-sample.csv`.
 5. Click `Reconcile`.
 6. Review the selected GL account, confidence, journal role, and reasoning for each mapped line.
@@ -166,9 +168,9 @@ The checked-in Gemini runtime uses a small server-side Developer API client in `
 
 ## Next planned ingestion slice
 
-The checked-in app still supports the current v1 demo upload contract today. The first prep slice for the next ingestion phase is now landed: the repo contains explicit Deel G2N schemas and a schema-faithful mock G2N fixture.
+The first two G2N ingestion slices are now landed in code: the repo contains explicit Deel G2N schemas, a schema-faithful mock G2N fixture, and a live payroll parser that converts G2N items into canonical payroll lines for the existing reconcile engine.
 
-The next implementation slice will cut the live payroll parser and upload route over to Deel G2N JSON while preserving deterministic reconciliation behavior. After that, the follow-up slice will broaden COA support through explicit CSV header aliases instead of claiming support for arbitrary input files.
+The next implementation slice will update the upload route copy and browser wording so the supported payroll input is explicitly labeled as Deel G2N JSON. After that, the follow-up slice will broaden COA support through explicit CSV header aliases instead of claiming support for arbitrary input files.
 
 Those changes are planned in dedicated docs and are not yet implemented in the current browser flow:
 
@@ -177,7 +179,7 @@ Those changes are planned in dedicated docs and are not yet implemented in the c
 
 ## Verification snapshot
 
-Current verification is recorded from a WSL bash shell in this repository after the G2N schema-prep slice landed.
+Current verification is recorded from a WSL bash shell in this repository after the G2N parser cutover slice landed.
 
 - Date: `2026-04-18`
 - `npm run build` passed

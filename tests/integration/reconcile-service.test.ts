@@ -64,12 +64,12 @@ function createNoMatchDecision(input: {
 describe("reconcile service", () => {
   it("maps repeated normalized concepts with a single model decision per concept", async () => {
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
-    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
     const candidateProvider = createLocalCandidateProvider(accounts);
     const mappingEngine: MappingDecisionEngine = {
       mapConcept: vi.fn(async ({ concept }) => {
         switch (concept.normalizedCode) {
-          case "UK_GROSS_PAY":
+          case "EARNINGS_GROSS_PAY":
             return createMatchedDecision({
               selectedAccountId: "exp-payroll-salary",
               journalRole: "expense",
@@ -77,8 +77,8 @@ describe("reconcile service", () => {
               confidenceBand: "high",
               reasoning: "Gross pay is salary expense.",
             });
-          case "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1":
-          case "DE_SOZIALVERSICHERUNG_AG_ANTEIL":
+          case "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1":
+          case "EMPLOYER_COSTS_EMPLOYER_SOCIAL_INSURANCE":
             return createMatchedDecision({
               selectedAccountId: "exp-payroll-tax",
               journalRole: "expense",
@@ -86,8 +86,8 @@ describe("reconcile service", () => {
               confidenceBand: "high",
               reasoning: "Employer payroll taxes map to payroll tax expense.",
             });
-          case "BR_INSS_EMPREGADO":
-          case "DE_LOHNSTEUER":
+          case "DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION":
+          case "DEDUCTIONS_WAGE_TAX":
             return createMatchedDecision({
               selectedAccountId: "liab-employee-tax",
               journalRole: "liability",
@@ -95,7 +95,7 @@ describe("reconcile service", () => {
               confidenceBand: "high",
               reasoning: "Employee withholdings map to tax liability.",
             });
-          case "NET_SALARY":
+          case "NET_PAY_NET_SALARY":
             return createMatchedDecision({
               selectedAccountId: "liab-net-pay",
               journalRole: "liability",
@@ -119,17 +119,23 @@ describe("reconcile service", () => {
 
     const mappedEmployerTaxLines = result.reconciledLines.filter(
       (line) =>
-        line.normalizedCode === "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1" &&
+        line.normalizedCode ===
+          "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1" &&
         line.status === "mapped",
     );
     const calledConcepts = vi
       .mocked(mappingEngine.mapConcept)
       .mock.calls.map(([input]) => input.concept.normalizedCode);
 
-    expect(calledConcepts.filter((code) => code === "BR_INSS_EMPREGADO")).toHaveLength(1);
     expect(
       calledConcepts.filter(
-        (code) => code === "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1",
+        (code) => code === "DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION",
+      ),
+    ).toHaveLength(1);
+    expect(
+      calledConcepts.filter(
+        (code) =>
+          code === "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
       ),
     ).toHaveLength(1);
     expect(vi.mocked(mappingEngine.mapConcept)).toHaveBeenCalledTimes(6);
@@ -148,20 +154,20 @@ describe("reconcile service", () => {
 
   it("quarantines invalid, NO_MATCH, and low-confidence decisions as anomalies", async () => {
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
-    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
     const candidateProvider = createLocalCandidateProvider(accounts);
     const mappingEngine: MappingDecisionEngine = {
       mapConcept: vi.fn(async ({ concept }) => {
         switch (concept.normalizedCode) {
-          case "UK_GROSS_PAY":
+          case "EARNINGS_GROSS_PAY":
             throw new Error("Model selected an account outside the candidate shortlist.");
-          case "DE_LOHNSTEUER":
+          case "DEDUCTIONS_WAGE_TAX":
             return createNoMatchDecision({
               confidenceScore: 0.24,
               confidenceBand: "low",
               reasoning: "No confident account match found for wage tax.",
             });
-          case "NET_SALARY":
+          case "NET_PAY_NET_SALARY":
             return createMatchedDecision({
               selectedAccountId: "liab-net-pay",
               journalRole: "liability",
@@ -169,8 +175,8 @@ describe("reconcile service", () => {
               confidenceBand: "low",
               reasoning: "Net salary looks payable, but confidence is too low.",
             });
-          case "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1":
-          case "DE_SOZIALVERSICHERUNG_AG_ANTEIL":
+          case "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1":
+          case "EMPLOYER_COSTS_EMPLOYER_SOCIAL_INSURANCE":
             return createMatchedDecision({
               selectedAccountId: "exp-payroll-tax",
               journalRole: "expense",
@@ -178,7 +184,7 @@ describe("reconcile service", () => {
               confidenceBand: "high",
               reasoning: "Employer payroll taxes map to payroll tax expense.",
             });
-          case "BR_INSS_EMPREGADO":
+          case "DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION":
             return createMatchedDecision({
               selectedAccountId: "liab-employee-tax",
               journalRole: "liability",
@@ -203,17 +209,17 @@ describe("reconcile service", () => {
     expect(result.reconciledLines).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          lineId: "uk-001",
+          lineId: "contract-gb-001:item-1",
           status: "anomaly",
           reasonCode: "invalid_decision",
         }),
         expect.objectContaining({
-          lineId: "de-002",
+          lineId: "contract-de-001:item-2",
           status: "anomaly",
           reasonCode: "no_match",
         }),
         expect.objectContaining({
-          lineId: "gb-004",
+          lineId: "contract-gb-001:item-3",
           status: "anomaly",
           reasonCode: "low_confidence",
         }),

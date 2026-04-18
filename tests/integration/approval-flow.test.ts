@@ -23,8 +23,8 @@ function createApprovalRequest(): Request {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      normalizedCode: "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1",
-      countryCode: "GB",
+      normalizedCode: "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
+      countryCode: null,
       selectedAccountId: "exp-payroll-tax",
       journalRole: "expense",
       confidenceScore: 0.99,
@@ -77,8 +77,8 @@ describe("approval flow", () => {
 
     expect(response.status).toBe(200);
     expect(savedApproval).toMatchObject({
-      normalizedCode: "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1",
-      countryCode: "GB",
+      normalizedCode: "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
+      countryCode: null,
       selectedAccountId: "exp-payroll-tax",
       journalRole: "expense",
       confidenceBand: "high",
@@ -91,18 +91,18 @@ describe("approval flow", () => {
 
     await expect(approvalMemory.listApprovedMappings()).resolves.toEqual([
       expect.objectContaining({
-        normalizedCode: "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1",
+        normalizedCode: "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
         selectedAccountId: "exp-payroll-tax",
       }),
     ]);
 
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
-    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
     const candidateProvider = createLocalCandidateProvider(accounts);
     const mappingEngine: MappingDecisionEngine = {
       mapConcept: vi.fn(async ({ concept }) => {
         switch (concept.normalizedCode) {
-          case "UK_GROSS_PAY":
+          case "EARNINGS_GROSS_PAY":
             return createMatchedDecision({
               selectedAccountId: "exp-payroll-salary",
               journalRole: "expense",
@@ -110,7 +110,7 @@ describe("approval flow", () => {
               confidenceBand: "high",
               reasoning: "Gross pay is salary expense.",
             });
-          case "DE_SOZIALVERSICHERUNG_AG_ANTEIL":
+          case "EMPLOYER_COSTS_EMPLOYER_SOCIAL_INSURANCE":
             return createMatchedDecision({
               selectedAccountId: "exp-payroll-tax",
               journalRole: "expense",
@@ -118,8 +118,8 @@ describe("approval flow", () => {
               confidenceBand: "high",
               reasoning: "Employer payroll taxes map to payroll tax expense.",
             });
-          case "BR_INSS_EMPREGADO":
-          case "DE_LOHNSTEUER":
+          case "DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION":
+          case "DEDUCTIONS_WAGE_TAX":
             return createMatchedDecision({
               selectedAccountId: "liab-employee-tax",
               journalRole: "liability",
@@ -127,7 +127,7 @@ describe("approval flow", () => {
               confidenceBand: "high",
               reasoning: "Employee withholdings map to tax liability.",
             });
-          case "NET_SALARY":
+          case "NET_PAY_NET_SALARY":
             return createMatchedDecision({
               selectedAccountId: "liab-net-pay",
               journalRole: "liability",
@@ -151,7 +151,9 @@ describe("approval flow", () => {
 
     expect(
       result.reconciledLines.filter(
-        (line) => line.normalizedCode === "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1",
+        (line) =>
+          line.normalizedCode ===
+          "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
       ),
     ).toEqual(
       expect.arrayContaining([
@@ -168,7 +170,7 @@ describe("approval flow", () => {
       .mock.calls.map(([input]) => input.concept.normalizedCode);
 
     expect(mappedConcepts).not.toContain(
-      "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1",
+      "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
     );
   });
 });

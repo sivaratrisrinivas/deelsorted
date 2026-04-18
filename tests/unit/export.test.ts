@@ -53,14 +53,14 @@ function createAnomalyLine(
 
 describe("export", () => {
   it("exports journal rows as stable CSV output", () => {
-    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
     const byId = new Map(accounts.map((account) => [account.accountId, account]));
 
     const result = buildJournalResult({
       reconciledLines: [
         createMappedLine(payrollLines[0]!, byId.get("exp-payroll-salary")!),
-        createMappedLine(payrollLines[7]!, byId.get("liab-net-pay")!),
+        createMappedLine(payrollLines[2]!, byId.get("liab-net-pay")!),
       ],
       clearingAccount: byId.get("liab-payroll-clearing")!,
     });
@@ -68,32 +68,32 @@ describe("export", () => {
     expect(exportJournalCsv(result.journalRows)).toBe(
       [
         "currency,accountCode,accountName,side,amount,memo",
-        "GBP,5000,Payroll Salaries,debit,4200,Gross Pay [uk-001]",
-        "GBP,2220,Net Pay Liability,credit,2985.67,Net Salary [gb-004]",
+        "GBP,5000,Payroll Salaries,debit,4200,Gross Pay [contract-gb-001:item-1]",
+        "GBP,2220,Net Pay Liability,credit,2985.67,Net Salary [contract-gb-001:item-3]",
         "GBP,2200,Payroll Clearing,credit,1214.33,Payroll clearing [GBP]",
       ].join("\r\n"),
     );
   });
 
   it("exports audit rows with raw code, selected account, confidence, and anomaly state", () => {
-    const payrollLines = parsePayrollJson(loadFixture("payroll-legacy-sample.json"));
+    const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
     const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
     const byId = new Map(accounts.map((account) => [account.accountId, account]));
     const reconciledLines: ReconciledPayrollLine[] = [
       createMappedLine(payrollLines[0]!, byId.get("exp-payroll-salary")!),
-      createAnomalyLine(payrollLines[6]!),
+      createAnomalyLine(payrollLines[7]!),
     ];
 
     const auditRows = buildAuditTrailRows(reconciledLines);
 
     expect(auditRows[0]).toMatchObject({
-      rawCode: "UK_Gross_Pay",
+      rawCode: "Gross Pay",
       selectedAccountCode: "5000",
       confidenceBand: "high",
       status: "mapped",
     });
     expect(auditRows[1]).toMatchObject({
-      rawCode: "DE_Lohnsteuer",
+      rawCode: "Wage Tax",
       selectedAccountCode: "",
       anomalyReasonCode: "no_match",
       status: "anomaly",
@@ -101,11 +101,10 @@ describe("export", () => {
     expect(exportAuditTrailCsv(auditRows)).toBe(
       [
         "lineId,sourceRef,countryCode,currency,rawCode,rawLabel,normalizedCode,amount,status,selectedAccountCode,selectedAccountName,journalRole,confidenceScore,confidenceBand,reasoning,anomalyReasonCode",
-        "uk-001,demo-april-2026:uk-001,GB,GBP,UK_Gross_Pay,Gross Pay,UK_GROSS_PAY,4200,mapped,5000,Payroll Salaries,expense,0.92,high,Mapped UK_Gross_Pay to Payroll Salaries.,",
-        "de-002,demo-april-2026:de-002,DE,EUR,DE_Lohnsteuer,Wage Tax,DE_LOHNSTEUER,700.5,anomaly,,, ,0.24,low,No account match found for DE_Lohnsteuer.,no_match",
+        "contract-gb-001:item-1,contract-gb-001,,GBP,Gross Pay,Gross Pay,EARNINGS_GROSS_PAY,4200,mapped,5000,Payroll Salaries,expense,0.92,high,Mapped Gross Pay to Payroll Salaries.,",
+        "contract-de-001:item-2,contract-de-001,,EUR,Wage Tax,Wage Tax,DEDUCTIONS_WAGE_TAX,700.5,anomaly,,,,0.24,low,No account match found for Wage Tax.,no_match",
       ]
-        .join("\r\n")
-        .replace(",,, ,", ",,,,"),
+        .join("\r\n"),
     );
   });
 });

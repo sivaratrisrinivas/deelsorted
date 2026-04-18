@@ -7,7 +7,7 @@ function loadFixture(name: string): string {
 }
 
 function createSuccessResponse(prompt: string): string {
-  if (prompt.includes('"normalizedCode": "UK_GROSS_PAY"')) {
+  if (prompt.includes('"normalizedCode": "EARNINGS_GROSS_PAY"')) {
     return JSON.stringify({
       isAnomaly: false,
       selectedAccountId: "exp-payroll-salary",
@@ -19,8 +19,12 @@ function createSuccessResponse(prompt: string): string {
   }
 
   if (
-    prompt.includes('"normalizedCode": "UK_NI_EMPLOYER_CONTRIBUTION_TIER_1"') ||
-    prompt.includes('"normalizedCode": "DE_SOZIALVERSICHERUNG_AG_ANTEIL"')
+    prompt.includes(
+      '"normalizedCode": "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1"',
+    ) ||
+    prompt.includes(
+      '"normalizedCode": "EMPLOYER_COSTS_EMPLOYER_SOCIAL_INSURANCE"',
+    )
   ) {
     return JSON.stringify({
       isAnomaly: false,
@@ -33,8 +37,10 @@ function createSuccessResponse(prompt: string): string {
   }
 
   if (
-    prompt.includes('"normalizedCode": "BR_INSS_EMPREGADO"') ||
-    prompt.includes('"normalizedCode": "DE_LOHNSTEUER"')
+    prompt.includes(
+      '"normalizedCode": "DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION"',
+    ) ||
+    prompt.includes('"normalizedCode": "DEDUCTIONS_WAGE_TAX"')
   ) {
     return JSON.stringify({
       isAnomaly: false,
@@ -46,7 +52,7 @@ function createSuccessResponse(prompt: string): string {
     });
   }
 
-  if (prompt.includes('"normalizedCode": "NET_SALARY"')) {
+  if (prompt.includes('"normalizedCode": "NET_PAY_NET_SALARY"')) {
     return JSON.stringify({
       isAnomaly: false,
       selectedAccountId: "liab-net-pay",
@@ -66,8 +72,8 @@ function createRouteRequest(): Request {
   formData.set(
     "payrollFile",
     new File(
-      [loadFixture("payroll-legacy-sample.json")],
-      "payroll-legacy-sample.json",
+      [loadFixture("payroll-sample.json")],
+      "payroll-sample.json",
       {
         type: "application/json",
       },

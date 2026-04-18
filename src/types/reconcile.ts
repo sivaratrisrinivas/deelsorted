@@ -7,6 +7,7 @@ const IsoDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const IsoDateTimeSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+const OptionalCountryCodeSchema = CountryCodeSchema.nullable();
 
 export const PayrollCategorySchema = z.enum([
   "earnings",
@@ -95,7 +96,7 @@ export const CoaEntrySchema = CoaCsvRowSchema.extend({
 export const PayrollLineSchema = z.object({
   lineId: NonEmptyStringSchema,
   sourceRef: NonEmptyStringSchema,
-  countryCode: CountryCodeSchema,
+  countryCode: OptionalCountryCodeSchema,
   currency: CurrencyCodeSchema,
   rawCode: NonEmptyStringSchema,
   rawLabel: NonEmptyStringSchema,
@@ -104,6 +105,9 @@ export const PayrollLineSchema = z.object({
   amount: z.number().finite(),
   section: PayrollCategorySchema,
   partySide: PayrollPartySideSchema,
+  rawCategory: NonEmptyStringSchema.optional(),
+  rawSubCategory: NonEmptyStringSchema.optional(),
+  rawCategoryGroup: NonEmptyStringSchema.optional(),
 });
 
 export const ConfidenceBandSchema = z.enum(["low", "medium", "high"]);
@@ -136,7 +140,7 @@ export const ModelMappingDecisionSchema = z.discriminatedUnion("isAnomaly", [
 
 export const MappingDecisionSchema = z.object({
   normalizedCode: NonEmptyStringSchema,
-  countryCode: CountryCodeSchema,
+  countryCode: OptionalCountryCodeSchema,
   selectedAccountId: NonEmptyStringSchema,
   selectedAccountCode: NonEmptyStringSchema.optional(),
   confidenceScore: z.number().min(0).max(1),
@@ -200,7 +204,7 @@ export const ReconciledPayrollLineSchema = z.discriminatedUnion("status", [
 export const AuditTrailRowSchema = z.object({
   lineId: NonEmptyStringSchema,
   sourceRef: NonEmptyStringSchema,
-  countryCode: CountryCodeSchema,
+  countryCode: OptionalCountryCodeSchema,
   currency: CurrencyCodeSchema,
   rawCode: NonEmptyStringSchema,
   rawLabel: NonEmptyStringSchema,
@@ -218,7 +222,7 @@ export const AuditTrailRowSchema = z.object({
 
 export const ApprovalSchema = z.object({
   normalizedCode: NonEmptyStringSchema,
-  countryCode: CountryCodeSchema,
+  countryCode: OptionalCountryCodeSchema,
   selectedAccountId: NonEmptyStringSchema,
   journalRole: JournalRoleSchema,
   confidenceScore: z.number().min(0).max(1),

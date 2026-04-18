@@ -103,7 +103,7 @@ export function AnomalyPanel({
                       fontSize: "0.9rem",
                     }}
                   >
-                    {line.countryCode} · {line.normalizedCode} ·{" "}
+                    {formatCountryCode(line.countryCode)} · {line.normalizedCode} ·{" "}
                     {formatAmount(line.currency, line.amount)}
                   </span>
                 </div>
@@ -156,6 +156,10 @@ export function AnomalyPanel({
 
 function formatAmount(currency: string, amount: number): string {
   return `${currency} ${amount.toFixed(2)}`;
+}
+
+function formatCountryCode(countryCode: string | null): string {
+  return countryCode ?? "Country unavailable";
 }
 
 function formatConfidence(confidenceScore: number): string {

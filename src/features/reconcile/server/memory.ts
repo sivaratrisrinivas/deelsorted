@@ -114,7 +114,7 @@ function upsertApproval(
 function getApprovalKey(
   approval: Pick<Approval, "countryCode" | "normalizedCode">,
 ): string {
-  return `${approval.countryCode}:${approval.normalizedCode}`;
+  return `${approval.countryCode ?? "NO_COUNTRY"}:${approval.normalizedCode}`;
 }
 
 function isMissingFileError(error: unknown): error is NodeJS.ErrnoException {

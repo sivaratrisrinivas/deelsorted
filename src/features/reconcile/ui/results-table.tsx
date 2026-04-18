@@ -122,7 +122,7 @@ export function ResultsTable({
                         fontSize: "0.9rem",
                       }}
                     >
-                      {line.countryCode} · {line.normalizedCode}
+                      {formatCountryCode(line.countryCode)} · {line.normalizedCode}
                     </span>
                   </td>
                   <td
@@ -223,6 +223,10 @@ export function ResultsTable({
       )}
     </section>
   );
+}
+
+function formatCountryCode(countryCode: string | null): string {
+  return countryCode ?? "Country unavailable";
 }
 
 function formatAmount(currency: string, amount: number): string {

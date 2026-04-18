@@ -1,24 +1,26 @@
 import { buildPayrollLine } from "../../features/reconcile/domain/normalize";
 import {
-  SupportedPayrollFileSchema,
+  DeelG2nReportSchema,
   type PayrollLine,
-  type SupportedPayrollFile,
+  type DeelG2nReport,
 } from "../../types/reconcile";
 
 export function parsePayrollJson(jsonText: string): PayrollLine[] {
-  return parseSupportedPayrollFile(JSON.parse(jsonText));
+  return parseDeelG2nReport(JSON.parse(jsonText));
 }
 
-export function parseSupportedPayrollFile(input: unknown): PayrollLine[] {
-  const payrollFile = SupportedPayrollFileSchema.parse(input);
+export function parseDeelG2nReport(input: unknown): PayrollLine[] {
+  const payrollReport = DeelG2nReportSchema.parse(input);
 
-  return payrollFile.items.map((item) =>
-    buildPayrollLine(payrollFile.payrollRunId, item),
+  return payrollReport.data.flatMap((contract) =>
+    contract.items.map((item, itemIndex) =>
+      buildPayrollLine(contract, item, itemIndex),
+    ),
   );
 }
 
-export function parseSupportedPayrollObject(
-  payrollFile: SupportedPayrollFile,
+export function parseDeelG2nReportObject(
+  payrollReport: DeelG2nReport,
 ): PayrollLine[] {
-  return parseSupportedPayrollFile(payrollFile);
+  return parseDeelG2nReport(payrollReport);
 }
