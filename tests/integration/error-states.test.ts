@@ -136,7 +136,7 @@ describe("Task 11 error states", () => {
 
     expect(emptyStateHtml).toContain("Chart of Accounts");
     expect(emptyStateHtml).toContain("Deel G2N JSON");
-    expect(emptyStateHtml).toContain("Use sample files");
+    expect(emptyStateHtml).toContain("Use Samples");
     expect(emptyStateHtml).toContain(
       "built-in demo fixtures for a one-click sample run",
     );

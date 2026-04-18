@@ -64,32 +64,38 @@ export function ApprovalActions({
         onClick={handleApprove}
         style={{
           border: "none",
-          borderRadius: "8px",
+          borderRadius: "0",
           padding: "0.75rem 1.25rem",
-          fontSize: "0.85rem",
+          fontSize: "0.75rem",
           fontFamily: "var(--font-engine)",
           fontWeight: 600,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
           background: isApproved
-            ? "var(--color-success)"
+            ? "var(--color-tertiary-container)"
             : isSubmitting
               ? "var(--color-surface-container-high)"
               : "var(--color-surface-container-highest)",
-          color: isApproved ? "var(--color-on-surface)" : isSubmitting ? "var(--color-outline-variant)" : "var(--color-on-surface)",
+          color: isApproved ? "var(--color-on-tertiary-container)" : isSubmitting ? "var(--color-outline-variant)" : "var(--color-on-surface)",
           cursor: isApproved ? "default" : isSubmitting ? "progress" : "pointer",
           whiteSpace: "nowrap",
-          transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-          boxShadow: isApproved ? "0 0 15px rgba(29, 215, 110, 0.3)" : "none",
-          transform: isSubmitting ? "scale(0.98)" : "scale(1)",
+          transition: "background 0ms",
           display: "flex",
           alignItems: "center",
           gap: "0.5rem"
         }}
         type="button"
+        onMouseEnter={(e) => {
+          if (!isSubmitting && !isApproved) e.currentTarget.style.background = "var(--color-outline-variant)";
+        }}
+        onMouseLeave={(e) => {
+          if (!isSubmitting && !isApproved) e.currentTarget.style.background = "var(--color-surface-container-highest)";
+        }}
       >
         {isApproved ? (
           <>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span style={{ color: "#000" }}>Stored in Memory</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Stored in Memory</span>
           </>
         ) : isSubmitting ? (
           "Saving..."

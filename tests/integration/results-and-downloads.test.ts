@@ -36,7 +36,8 @@ describe("ResultsSummary", () => {
 
     expect(html).toContain("Analysis Complete");
     expect(html).toContain("Gross Pay");
-    expect(html).toContain("5000 Payroll Salaries");
+    expect(html).toContain("5000");
+    expect(html).toContain("Payroll Salaries");
     expect(html).toContain("High (98%)");
     expect(html).toContain("Gross pay is salary expense.");
     expect(html).toContain("Hard Failures");

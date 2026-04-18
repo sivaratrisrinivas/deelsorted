@@ -81,7 +81,7 @@ export function UploadForm(): React.JSX.Element {
 
   return (
     <div style={{ marginTop: "1rem" }}>
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1.5rem" }}>
+      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
           <div style={{ flex: "1 1 calc(50% - 0.5rem)" }}>
             <UploadField
@@ -105,10 +105,10 @@ export function UploadForm(): React.JSX.Element {
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", padding: "1rem", background: "var(--color-surface-container-lowest)" }}>
           <div>
-            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--color-outline)" }}>
-              Requires <code style={{ color: "var(--color-on-surface-variant)", background: "rgba(255,255,255,0.05)", padding: "2px 6px", borderRadius: "4px" }}>GEMINI_API_KEY</code>
+            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--color-on-surface-variant)" }}>
+              Requires <code style={{ color: "var(--color-on-surface)", fontFamily: "monospace", opacity: 0.9 }}>GEMINI_API_KEY</code>
             </p>
             <p style={{ margin: "0.45rem 0 0", fontSize: "0.85rem", color: "var(--color-outline)" }}>
               Or use the built-in demo fixtures for a one-click sample run.
@@ -121,37 +121,64 @@ export function UploadForm(): React.JSX.Element {
                 void handleUseSampleFiles();
               }}
               style={{
-                border: "1px solid var(--color-outline-variant)",
-                borderRadius: "8px",
-                padding: "1rem 1.5rem",
+                border: "1px solid rgba(67, 70, 85, 0.4)", // outline-variant ghost border
+                borderRadius: "0",
+                padding: "0.85rem 1.5rem",
                 fontSize: "0.95rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
                 fontFamily: "var(--font-engine)",
                 fontWeight: 600,
-                background: "var(--color-surface-container-low)",
+                background: "transparent",
                 color: isSubmitting ? "var(--color-outline-variant)" : "var(--color-on-surface)",
                 cursor: isSubmitting ? "progress" : "pointer",
-                transition: "all 0.2s ease-in-out",
+                transition: "background 0ms",
               }}
               type="button"
+              onMouseEnter={(e) => {
+                if (!isSubmitting) e.currentTarget.style.background = "var(--color-surface-container-high)";
+              }}
+              onMouseLeave={(e) => {
+                if (!isSubmitting) e.currentTarget.style.background = "transparent";
+              }}
+              onMouseDown={(e) => {
+                 if (!isSubmitting) e.currentTarget.style.background = "var(--color-surface-container-highest)";
+              }}
+              onMouseUp={(e) => {
+                 if (!isSubmitting) e.currentTarget.style.background = "var(--color-surface-container-high)";
+              }}
             >
-              Use sample files
+              Use Samples
             </button>
             <button
               disabled={isSubmitting || !allFilesReady}
               style={{
                 border: "none",
-                borderRadius: "8px",
-                padding: "1rem 2rem",
-                fontSize: "1rem",
+                borderRadius: "0",
+                padding: "0.85rem 2.5rem",
+                fontSize: "0.95rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
                 fontFamily: "var(--font-engine)",
-                fontWeight: 600,
-                background: isSubmitting || !allFilesReady ? "var(--color-surface-container-high)" : "linear-gradient(135deg, var(--color-primary), var(--color-primary-container))",
-                color: isSubmitting || !allFilesReady ? "var(--color-outline-variant)" : "#0b1326",
+                fontWeight: 700,
+                background: isSubmitting || !allFilesReady ? "var(--color-surface-container-highest)" : "var(--color-primary-container)",
+                color: isSubmitting || !allFilesReady ? "var(--color-outline-variant)" : "var(--color-on-primary-container)",
                 cursor: isSubmitting ? "progress" : (!allFilesReady ? "not-allowed" : "pointer"),
-                boxShadow: allFilesReady && !isSubmitting ? "0 4px 15px rgba(46, 107, 255, 0.4)" : "none",
-                transition: "all 0.2s ease-in-out",
+                transition: "background 0ms",
               }}
               type="submit"
+              onMouseEnter={(e) => {
+                if (!isSubmitting && allFilesReady) e.currentTarget.style.background = "var(--color-primary-fixed)";
+              }}
+              onMouseLeave={(e) => {
+                if (!isSubmitting && allFilesReady) e.currentTarget.style.background = "var(--color-primary-container)";
+              }}
+              onMouseDown={(e) => {
+                 if (!isSubmitting && allFilesReady) e.currentTarget.style.background = "var(--color-primary-fixed-variant)";
+              }}
+              onMouseUp={(e) => {
+                 if (!isSubmitting && allFilesReady) e.currentTarget.style.background = "var(--color-primary-fixed)";
+              }}
             >
               {isSubmitting ? "Reconciling..." : "Run Reconciliation"}
             </button>
@@ -159,7 +186,7 @@ export function UploadForm(): React.JSX.Element {
         </div>
       </form>
 
-      <div style={{ marginTop: "3rem" }}>
+      <div style={{ marginTop: "2rem" }}>
         {isSubmitting ? <LoadingState /> : null}
         {!isSubmitting && errorMessage ? <ErrorState message={errorMessage} /> : null}
         {!isSubmitting && !errorMessage && result ? (
@@ -227,27 +254,27 @@ function UploadField({
         display: "block",
         position: "relative",
         background: "var(--color-surface-container-low)",
-        border: `1px solid ${isReady ? "var(--color-primary)" : "var(--color-outline-variant)"}`,
-        borderRadius: "12px",
+        border: "none",
+        borderBottom: `2px solid ${isReady ? "var(--color-tertiary)" : "transparent"}`,
+        borderRadius: "0",
         padding: "2rem",
         cursor: "pointer",
-        transition: "all 0.2s",
-        boxShadow: isReady ? "inset 0 0 0 1px rgba(181, 196, 255, 0.1)" : "none",
+        transition: "background 0ms",
       }}
       onMouseEnter={(e) => {
-        if (!isReady) e.currentTarget.style.borderColor = "var(--color-outline)";
+        if (!isReady) e.currentTarget.style.background = "var(--color-surface-container)";
       }}
       onMouseLeave={(e) => {
-        if (!isReady) e.currentTarget.style.borderColor = "var(--color-outline-variant)";
+        if (!isReady) e.currentTarget.style.background = "var(--color-surface-container-low)";
       }}
     >
       <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
         <div style={{ 
           width: "40px", height: "40px", 
-          borderRadius: "8px", 
+          borderRadius: "0", 
           background: "var(--color-surface-container-highest)",
           display: "grid", placeItems: "center",
-          color: isReady ? "var(--color-primary)" : "var(--color-on-surface-variant)"
+          color: isReady ? "var(--color-tertiary)" : "var(--color-on-surface-variant)"
         }}>
           {isReady ? (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
@@ -256,10 +283,10 @@ function UploadField({
           )}
         </div>
         <div>
-          <span style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-outline)", marginBottom: "0.25rem" }}>
+          <span style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-outline)", marginBottom: "0.25rem", fontFamily: "var(--font-engine)" }}>
             {label}
           </span>
-          <span style={{ display: "block", fontSize: "1.2rem", fontWeight: 600, color: isReady ? "var(--color-on-surface)" : "var(--color-on-surface-variant)" }}>
+          <span style={{ display: "block", fontSize: "1.2rem", fontWeight: 600, color: isReady ? "var(--color-on-surface)" : "var(--color-on-surface-variant)", fontFamily: "monospace" }}>
             {isReady ? "Ready to map" : helperText}
           </span>
         </div>
@@ -280,3 +307,4 @@ function UploadField({
     </label>
   );
 }
+

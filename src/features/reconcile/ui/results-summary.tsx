@@ -36,21 +36,21 @@ export function ResultsSummary({
   
   // LED Status color
   const statusColor = precisionScore === 100 
-    ? "var(--color-success)" 
+    ? "var(--color-tertiary)" 
     : precisionScore >= 80 
-      ? "var(--color-warning)" 
+      ? "var(--color-primary)" 
       : "var(--color-error)";
 
   return (
     <section style={{ marginTop: "2rem", display: "grid", gap: "2rem" }}>
       <div
-        className="glass-panel"
         style={{
           padding: "2rem",
           display: "flex",
           gap: "2rem",
           alignItems: "center",
           flexWrap: "wrap",
+          background: "var(--color-surface-container-low)"
         }}
       >
         <div style={{ flex: "1 1 300px" }}>
@@ -69,9 +69,11 @@ export function ResultsSummary({
             style={{
               marginTop: "0.5rem",
               marginBottom: "1rem",
-              fontSize: "1.8rem",
+              fontSize: "2rem",
               color: "var(--color-on-surface)",
               fontFamily: "var(--font-engine)",
+              fontWeight: 400,
+              letterSpacing: "-0.02em"
             }}
           >
             Analysis Complete
@@ -95,22 +97,22 @@ export function ResultsSummary({
           gap: "1.5rem",
           background: "var(--color-surface-container-highest)",
           padding: "1.5rem",
-          borderRadius: "16px",
-          border: "1px solid var(--color-outline-variant)"
+          borderRadius: "0",
+          border: "none"
         }}>
           <div style={{ position: "relative", width: "80px", height: "80px" }}>
             <svg viewBox="0 0 36 36" style={{ width: "100%", height: "100%", transform: "rotate(-90deg)" }}>
               <path
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 fill="none"
-                stroke="var(--color-surface-container-high)"
-                strokeWidth="3"
+                stroke="var(--color-surface-container)"
+                strokeWidth="2"
               />
               <path
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 fill="none"
                 stroke={statusColor}
-                strokeWidth="3"
+                strokeWidth="2"
                 strokeDasharray={`${precisionScore}, 100`}
                 style={{ transition: "stroke-dasharray 1s ease-out" }}
               />
@@ -119,15 +121,15 @@ export function ResultsSummary({
               position: "absolute", inset: 0, 
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"
             }}>
-              <span style={{ fontSize: "1.2rem", fontWeight: "700", color: "var(--color-on-surface)", fontFamily: "var(--font-engine)" }}>
+              <span style={{ fontSize: "1.2rem", fontWeight: "400", color: "var(--color-on-surface)", fontFamily: "monospace" }}>
                 {precisionScore}%
               </span>
             </div>
           </div>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: statusColor, boxShadow: `0 0 8px ${statusColor}` }} />
-              <span style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-outline)" }}>Precision Score</span>
+              <div style={{ width: "8px", height: "8px", borderRadius: "0", background: statusColor, boxShadow: `0 0 8px ${statusColor}` }} />
+              <span style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-outline)", fontFamily: "var(--font-engine)" }}>Precision Score</span>
             </div>
             <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--color-on-surface-variant)" }}>
               {precisionScore === 100 ? "Perfect mapping." : `${totalLines - mappedLines.length} lines require attention.`}
@@ -171,10 +173,11 @@ function SummaryStat({ label, value, highlight, alert }: SummaryStatProps): Reac
   return (
     <div
       style={{
-        borderRadius: "4px",
+        borderRadius: "0",
         padding: "1.25rem 1rem",
-        background: "var(--color-surface-container)",
-        border: `1px solid ${highlight ? "var(--color-primary)" : alert ? "var(--color-error)" : "var(--color-outline-variant)"}`,
+        background: highlight ? "var(--color-surface-container)" : alert ? "var(--color-surface-container)" : "var(--color-surface-container-low)",
+        border: "none",
+        borderBottom: `2px solid ${highlight ? "var(--color-tertiary)" : alert ? "var(--color-error)" : "var(--color-outline-variant)"}`,
         position: "relative",
         overflow: "hidden",
       }}
@@ -187,6 +190,7 @@ function SummaryStat({ label, value, highlight, alert }: SummaryStatProps): Reac
           fontSize: "0.8rem",
           textTransform: "uppercase",
           letterSpacing: "0.05em",
+          fontFamily: "var(--font-engine)"
         }}
       >
         {label}
@@ -195,9 +199,9 @@ function SummaryStat({ label, value, highlight, alert }: SummaryStatProps): Reac
         style={{
           margin: 0,
           fontSize: "1.5rem",
-          fontFamily: "var(--font-engine)",
-          fontWeight: 600,
-          color: highlight ? "var(--color-primary)" : alert ? "var(--color-error)" : "var(--color-on-surface)",
+          fontFamily: "monospace",
+          fontWeight: 400,
+          color: highlight ? "var(--color-tertiary)" : alert ? "var(--color-error)" : "var(--color-on-surface)",
         }}
       >
         {value}
@@ -205,3 +209,4 @@ function SummaryStat({ label, value, highlight, alert }: SummaryStatProps): Reac
     </div>
   );
 }
+
