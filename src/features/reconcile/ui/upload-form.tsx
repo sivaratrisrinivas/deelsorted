@@ -69,8 +69,8 @@ export function UploadForm(): React.JSX.Element {
       >
         <UploadField
           accept=".json,application/json"
-          helperText="Upload the supported Deel-style payroll JSON file."
-          label="Payroll JSON"
+          helperText="Upload the supported Deel G2N payroll JSON file."
+          label="Deel G2N JSON"
           name="payrollFile"
         />
         <UploadField
@@ -163,9 +163,9 @@ export function UploadForm(): React.JSX.Element {
                 color: "#4b5563",
               }}
             >
-              Choose one Deel-style payroll JSON file and one chart-of-accounts
-              CSV file, then run reconciliation to populate mapped lines,
-              anomalies, and both export downloads.
+              Choose one Deel G2N JSON file and one chart-of-accounts CSV file,
+              then run reconciliation to populate mapped lines, anomalies, and
+              both export downloads.
             </p>
           </section>
         ) : null}

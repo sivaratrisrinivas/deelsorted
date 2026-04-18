@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 class InvalidUploadError extends Error {}
 
 const uploadLabels = {
-  payrollFile: "payroll JSON",
+  payrollFile: "Deel G2N JSON",
   coaFile: "COA CSV",
 } as const;
 
@@ -73,12 +73,12 @@ function parseUploadedPayroll(payrollText: string) {
     return parsePayrollJson(payrollText);
   } catch (error) {
     if (error instanceof SyntaxError) {
-      throw new InvalidUploadError("Payroll JSON must be valid JSON.");
+      throw new InvalidUploadError("Deel G2N JSON must be valid JSON.");
     }
 
     if (error instanceof ZodError) {
       throw new InvalidUploadError(
-        "Payroll JSON must match the supported Deel export shape.",
+        "Deel G2N JSON must match the supported Deel G2N payroll export shape.",
       );
     }
 

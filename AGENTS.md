@@ -4,10 +4,11 @@
 - Planning is complete.
 - Implementation through Task 12 is complete.
 - Tasks 1 through 12 are implemented in the repository.
-- The next-phase G2N ingestion follow-up is in progress through its parser cutover slice.
+- The next-phase G2N ingestion follow-up has landed through its upload-copy cleanup slice.
 - Schema-faithful Deel G2N schemas and a mock G2N fixture are checked in.
 - The live payroll parser now accepts the checked-in Deel G2N fixture and feeds the existing reconcile engine.
-- The upload UI copy is still generic and has not yet been renamed to `Deel G2N JSON`.
+- The upload route and browser UI now explicitly label the supported payroll input as `Deel G2N JSON`.
+- The route now distinguishes malformed JSON from unsupported payroll schema with G2N-specific upload errors.
 - The current source of truth is the repository docs plus the checked-in application code and tests.
 
 ## What We Are Building
@@ -69,7 +70,7 @@ These are the current project commands.
 - Journal building, anomaly handling, and exports are deterministic.
 - The checked-in runtime currently supports the schema-faithful Deel G2N payroll JSON shape and one COA CSV shape.
 - The repo also contains the preserved legacy payroll fixture for reference, but the live parser no longer treats it as the supported upload path.
-- The upload UI wording has not yet been renamed to `Deel G2N JSON`, so prefer the application code and tests over the current visible label text when those conflict.
+- The upload route and UI now use `Deel G2N JSON` wording; keep parser behavior and visible copy aligned when extending the ingestion flow.
 - Approved mappings are stored per normalized payroll concept, not per raw line.
 - Only explicit human approvals may be reused as memory.
 - Unsupported or uncertain cases should be quarantined as anomalies, not forced through.
@@ -188,7 +189,7 @@ Follow the approved plan:
 Progress today:
 - Steps 1 through 9 are implemented in the repo.
 - Task 12 closeout docs and final verification are implemented in the repo.
-- The next-phase G2N ingestion parser cutover slice is checked in: Deel G2N schemas, a schema-faithful mock fixture, and G2N-to-canonical payroll normalization are present, while upload-copy cleanup and COA alias broadening remain follow-up scope.
+- The next-phase G2N ingestion parser cutover and upload-copy cleanup slices are checked in: Deel G2N schemas, a schema-faithful mock fixture, G2N-to-canonical payroll normalization, explicit `Deel G2N JSON` upload wording, and schema-specific upload errors are present, while COA alias broadening remains follow-up scope.
 - Remaining work is user-directed follow-up scope, not an unfinished planned task.
 
 ## Success Markers

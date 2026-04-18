@@ -55,7 +55,7 @@ describe("Task 11 error states", () => {
     const body = (await response.json()) as { error: string };
 
     expect(response.status).toBe(400);
-    expect(body.error).toBe("Upload a payroll JSON file to continue.");
+    expect(body.error).toBe("Upload a Deel G2N JSON file to continue.");
   });
 
   it("returns a clear 400 when payroll JSON is malformed", async () => {
@@ -72,7 +72,30 @@ describe("Task 11 error states", () => {
     const body = (await response.json()) as { error: string };
 
     expect(response.status).toBe(400);
-    expect(body.error).toBe("Payroll JSON must be valid JSON.");
+    expect(body.error).toBe("Deel G2N JSON must be valid JSON.");
+  });
+
+  it("returns a clear 400 when payroll JSON is valid but unsupported", async () => {
+    const response = await POST(
+      createRequest({
+        payrollFile: new File(
+          [JSON.stringify({ data: [], has_more: false })],
+          "payroll-sample.json",
+          {
+            type: "application/json",
+          },
+        ),
+        coaFile: new File([loadFixture("coa-sample.csv")], "coa-sample.csv", {
+          type: "text/csv",
+        }),
+      }),
+    );
+    const body = (await response.json()) as { error: string };
+
+    expect(response.status).toBe(400);
+    expect(body.error).toBe(
+      "Deel G2N JSON must match the supported Deel G2N payroll export shape.",
+    );
   });
 
   it("returns a clear 400 when the COA CSV shape is unsupported", async () => {
@@ -107,18 +130,19 @@ describe("Task 11 error states", () => {
     const loadingStateHtml = renderToStaticMarkup(createElement(LoadingState));
     const errorStateHtml = renderToStaticMarkup(
       createElement(ErrorState, {
-        message: "Payroll JSON must be valid JSON.",
+        message: "Deel G2N JSON must be valid JSON.",
       }),
     );
 
     expect(emptyStateHtml).toContain("Upload the supported files to begin.");
     expect(emptyStateHtml).toContain("Ready for the demo flow");
+    expect(emptyStateHtml).toContain("Deel G2N JSON");
     expect(loadingStateHtml).toContain("Reconciling uploads...");
     expect(loadingStateHtml).toContain(
       "Parsing files, shortlisting accounts, and validating mapping decisions.",
     );
-  expect(errorStateHtml).toContain("Reconcile stopped safely");
-  expect(errorStateHtml).toContain("Fix the upload and try again.");
-  expect(errorStateHtml).toContain("Payroll JSON must be valid JSON.");
+    expect(errorStateHtml).toContain("Reconcile stopped safely");
+    expect(errorStateHtml).toContain("Fix the upload and try again.");
+    expect(errorStateHtml).toContain("Deel G2N JSON must be valid JSON.");
   });
 });

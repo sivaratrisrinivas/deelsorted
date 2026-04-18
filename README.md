@@ -103,7 +103,8 @@ What is already done:
 - the workspace-root warning from the unrelated WSL `pnpm-lock.yaml` is handled in `next.config.ts`
 - the repo now includes explicit Deel G2N schemas plus a schema-faithful mock G2N fixture
 - the live payroll parser now normalizes the checked-in G2N fixture into the existing deterministic reconcile flow
-- the upload UI copy is still generically labeled `Payroll JSON` until the next upload-UX wording slice lands
+- the upload route and browser UI now explicitly label the payroll upload as `Deel G2N JSON`
+- malformed payroll JSON and unsupported payroll schema now produce distinct G2N-specific upload errors
 
 ## How to run the project
 
@@ -168,9 +169,9 @@ The checked-in Gemini runtime uses a small server-side Developer API client in `
 
 ## Next planned ingestion slice
 
-The first two G2N ingestion slices are now landed in code: the repo contains explicit Deel G2N schemas, a schema-faithful mock G2N fixture, and a live payroll parser that converts G2N items into canonical payroll lines for the existing reconcile engine.
+The first three G2N ingestion slices are now landed in code: the repo contains explicit Deel G2N schemas, a schema-faithful mock G2N fixture, a live payroll parser that converts G2N items into canonical payroll lines for the existing reconcile engine, and upload wording that explicitly labels the supported payroll input as `Deel G2N JSON`.
 
-The next implementation slice will update the upload route copy and browser wording so the supported payroll input is explicitly labeled as Deel G2N JSON. After that, the follow-up slice will broaden COA support through explicit CSV header aliases instead of claiming support for arbitrary input files.
+The next implementation slice will broaden COA support through explicit CSV header aliases instead of claiming support for arbitrary input files.
 
 Those changes are planned in dedicated docs and are not yet implemented in the current browser flow:
 
@@ -179,13 +180,13 @@ Those changes are planned in dedicated docs and are not yet implemented in the c
 
 ## Verification snapshot
 
-Current verification is recorded from a WSL bash shell in this repository after the G2N parser cutover slice landed.
+Current verification is recorded from a WSL bash shell in this repository after the G2N upload-copy slice landed.
 
 - Date: `2026-04-18`
 - `npm run build` passed
 - `npm run lint` passed
 - `npm run typecheck` passed
-- `npm run test` passed with `13` test files and `28` tests green
+- `npm run test` passed with `13` test files and `29` tests green
 - Manual run check: `npm run dev -- --hostname 127.0.0.1 --port 3001` reached a ready Next.js server at `http://127.0.0.1:3001` in `2.7s`
 
 ## Planned v1 scope
