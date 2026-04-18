@@ -149,15 +149,28 @@ describe("approval flow", () => {
       mappingEngine,
     });
 
+    const reusedEmployerTaxLines = result.reconciledLines.filter(
+      (line) =>
+        line.normalizedCode ===
+          "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1" &&
+        line.status === "mapped",
+    );
+
+    expect(reusedEmployerTaxLines).toHaveLength(2);
     expect(
-      result.reconciledLines.filter(
-        (line) =>
-          line.normalizedCode ===
-          "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
-      ),
+      reusedEmployerTaxLines,
     ).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
+          lineId: "contract-gb-001:item-2",
+          sourceRef: "contract-gb-001",
+          status: "mapped",
+          mappingSource: "memory",
+          selectedAccountId: "exp-payroll-tax",
+        }),
+        expect.objectContaining({
+          lineId: "contract-gb-002:item-1",
+          sourceRef: "contract-gb-002",
           status: "mapped",
           mappingSource: "memory",
           selectedAccountId: "exp-payroll-tax",

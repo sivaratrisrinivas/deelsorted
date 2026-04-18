@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -6,122 +8,41 @@ import {
   type ReconcileResultPayload,
 } from "../../src/features/reconcile/ui/results-summary";
 import {
-  AnomalousPayrollLineSchema,
-  AuditTrailRowSchema,
-  JournalRowSchema,
-  MappedPayrollLineSchema,
+  type MappingDecisionEngine,
+  reconcilePayroll,
+} from "../../src/features/reconcile/server/reconcile";
+import { createLocalCandidateProvider } from "../../src/features/reconcile/server/retrieval";
+import { parseCoaCsv } from "../../src/lib/parsers/coa";
+import { parsePayrollJson } from "../../src/lib/parsers/payroll";
+import type {
+  Approval,
+  CoaEntry,
+  ModelMappingDecision,
+  PayrollLine,
 } from "../../src/types/reconcile";
 
-const mappedLine = MappedPayrollLineSchema.parse({
-  lineId: "line-001",
-  sourceRef: "worker-uk-001:uk-001",
-  countryCode: "GB",
-  currency: "GBP",
-  rawCode: "UK_Gross_Pay",
-  rawLabel: "Gross Pay",
-  normalizedCode: "UK_GROSS_PAY",
-  tokens: ["UK", "GROSS", "PAY"],
-  amount: 4200,
-  section: "earnings",
-  partySide: "employee",
-  status: "mapped",
-  selectedAccountId: "exp-payroll-salary",
-  selectedAccountCode: "5000",
-  selectedAccountName: "Payroll Salaries",
-  confidenceScore: 0.98,
-  confidenceBand: "high",
-  reasoning: "Gross pay is salary expense.",
-  journalRole: "expense",
-  mappingSource: "model",
-});
-
-const anomalyLine = AnomalousPayrollLineSchema.parse({
-  lineId: "line-002",
-  sourceRef: "worker-de-001:de-999",
-  countryCode: "DE",
-  currency: "EUR",
-  rawCode: "DE_Unknown_Code",
-  rawLabel: "Unknown Tax",
-  normalizedCode: "DE_UNKNOWN_CODE",
-  tokens: ["DE", "UNKNOWN", "CODE"],
-  amount: 120.5,
-  section: "employee_taxes",
-  partySide: "employee",
-  status: "anomaly",
-  reasonCode: "low_confidence",
-  reasoning: "Model response was below the confidence threshold.",
-  confidenceScore: 0.41,
-  confidenceBand: "low",
-});
-
-const result: ReconcileResultPayload = {
-  reconciledLines: [mappedLine, anomalyLine],
-  anomalies: [anomalyLine],
-  journalRows: [
-    JournalRowSchema.parse({
-      currency: "GBP",
-      accountId: "exp-payroll-salary",
-      accountCode: "5000",
-      accountName: "Payroll Salaries",
-      side: "debit",
-      amount: 4200,
-      memo: "Gross Pay [line-001]",
-    }),
-  ],
-  auditTrailRows: [
-    AuditTrailRowSchema.parse({
-      lineId: "line-001",
-      sourceRef: "worker-uk-001:uk-001",
-      countryCode: "GB",
-      currency: "GBP",
-      rawCode: "UK_Gross_Pay",
-      rawLabel: "Gross Pay",
-      normalizedCode: "UK_GROSS_PAY",
-      amount: 4200,
-      status: "mapped",
-      selectedAccountCode: "5000",
-      selectedAccountName: "Payroll Salaries",
-      journalRole: "expense",
-      confidenceScore: 0.98,
-      confidenceBand: "high",
-      reasoning: "Gross pay is salary expense.",
-      anomalyReasonCode: "",
-    }),
-    AuditTrailRowSchema.parse({
-      lineId: "line-002",
-      sourceRef: "worker-de-001:de-999",
-      countryCode: "DE",
-      currency: "EUR",
-      rawCode: "DE_Unknown_Code",
-      rawLabel: "Unknown Tax",
-      normalizedCode: "DE_UNKNOWN_CODE",
-      amount: 120.5,
-      status: "anomaly",
-      selectedAccountCode: "",
-      selectedAccountName: "",
-      journalRole: "",
-      confidenceScore: 0.41,
-      confidenceBand: "low",
-      reasoning: "Model response was below the confidence threshold.",
-      anomalyReasonCode: "low_confidence",
-    }),
-  ],
-};
+function loadFixture(name: string): string {
+  return readFileSync(join(process.cwd(), "fixtures", name), "utf8");
+}
 
 describe("ResultsSummary", () => {
-  it("renders mapped details, anomaly detail, and CSV download links", () => {
+  it("renders G2N-derived mapped details, anomaly detail, and CSV download links", async () => {
+    const result = await createReconcileResult();
     const html = renderToStaticMarkup(
       createElement(ResultsSummary, {
         result,
       }),
     );
 
+    expect(html).toContain("Uploads processed successfully.");
+    expect(html).toContain("Gross Pay");
     expect(html).toContain("5000 Payroll Salaries");
     expect(html).toContain("High (98%)");
     expect(html).toContain("Gross pay is salary expense.");
     expect(html).toContain("Anomalies");
+    expect(html).toContain("Wage Tax");
     expect(html).toContain("Low confidence mapping");
-    expect(html).toContain("Model response was below the confidence threshold.");
+    expect(html).toContain("Wage tax looks payable, but confidence stayed low.");
     expect(html).toContain("Download journal CSV");
     expect(html).toContain("Download audit trail CSV");
     expect(html).toContain("Approve mapping");
@@ -134,14 +55,116 @@ describe("ResultsSummary", () => {
       "currency,accountCode,accountName,side,amount,memo",
     );
     expect(decodeCsvDataUri(journalHref)).toContain("5000,Payroll Salaries");
+    expect(decodeCsvDataUri(journalHref)).toContain("2200,Payroll Clearing");
     expect(decodeCsvDataUri(auditHref)).toContain(
       "lineId,sourceRef,countryCode,currency,rawCode",
     );
-    expect(decodeCsvDataUri(auditHref)).toContain(
-      "low_confidence",
-    );
+    expect(decodeCsvDataUri(auditHref)).toContain("contract-de-001");
+    expect(decodeCsvDataUri(auditHref)).toContain("DEDUCTIONS_WAGE_TAX");
+    expect(decodeCsvDataUri(auditHref)).toContain("low_confidence");
   });
 });
+
+async function createReconcileResult(): Promise<ReconcileResultPayload> {
+  const accounts = parseCoaCsv(loadFixture("coa-sample.csv"));
+  const payrollLines = parsePayrollJson(loadFixture("payroll-sample.json"));
+  const candidateProvider = createLocalCandidateProvider(accounts);
+  const mappingEngine: MappingDecisionEngine = {
+    async mapConcept({ concept }) {
+      switch (concept.normalizedCode) {
+        case "EARNINGS_GROSS_PAY":
+          return createMatchedDecision({
+            selectedAccountId: "exp-payroll-salary",
+            journalRole: "expense",
+            confidenceScore: 0.98,
+            confidenceBand: "high",
+            reasoning: "Gross pay is salary expense.",
+          });
+        case "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1":
+        case "EMPLOYER_COSTS_EMPLOYER_SOCIAL_INSURANCE":
+          return createMatchedDecision({
+            selectedAccountId: "exp-payroll-tax",
+            journalRole: "expense",
+            confidenceScore: 0.93,
+            confidenceBand: "high",
+            reasoning: "Employer payroll taxes map to payroll tax expense.",
+          });
+        case "DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION":
+          return createMatchedDecision({
+            selectedAccountId: "liab-employee-tax",
+            journalRole: "liability",
+            confidenceScore: 0.9,
+            confidenceBand: "high",
+            reasoning: "Employee withholdings map to tax liability.",
+          });
+        case "DEDUCTIONS_WAGE_TAX":
+          return createMatchedDecision({
+            selectedAccountId: "liab-employee-tax",
+            journalRole: "liability",
+            confidenceScore: 0.41,
+            confidenceBand: "low",
+            reasoning: "Wage tax looks payable, but confidence stayed low.",
+          });
+        case "NET_PAY_NET_SALARY":
+          return createMatchedDecision({
+            selectedAccountId: "liab-net-pay",
+            journalRole: "liability",
+            confidenceScore: 0.95,
+            confidenceBand: "high",
+            reasoning: "Net salary is payable to employees.",
+          });
+        default:
+          throw new Error(`Unexpected concept: ${concept.normalizedCode}`);
+      }
+    },
+  };
+
+  return reconcilePayroll({
+    payrollLines,
+    accounts,
+    candidateProvider,
+    approvalMemory: createEmptyApprovalMemory(),
+    mappingEngine,
+  });
+}
+
+function createEmptyApprovalMemory(): {
+  listApprovedMappings: () => Promise<Approval[]>;
+  getApprovedMapping: (input: {
+    countryCode: PayrollLine["countryCode"];
+    normalizedCode: PayrollLine["normalizedCode"];
+  }) => Promise<Approval | null>;
+  saveApprovedMapping: (input: Approval) => Promise<Approval>;
+} {
+  return {
+    async listApprovedMappings() {
+      return [];
+    },
+    async getApprovedMapping() {
+      return null;
+    },
+    async saveApprovedMapping(input) {
+      return input;
+    },
+  };
+}
+
+function createMatchedDecision(input: {
+  selectedAccountId: CoaEntry["accountId"];
+  journalRole: "expense" | "liability";
+  confidenceScore: number;
+  confidenceBand: "low" | "medium" | "high";
+  reasoning: string;
+}): ModelMappingDecision {
+  return {
+    isAnomaly: false,
+    selectedAccountId: input.selectedAccountId,
+    journalRole: input.journalRole,
+    confidenceScore: input.confidenceScore,
+    confidenceBand: input.confidenceBand,
+    reasoning: input.reasoning,
+  };
+}
 
 function extractDownloadHref(html: string, filename: string): string {
   const pattern = new RegExp(`download="${filename}"[^>]*href="([^"]+)"`);

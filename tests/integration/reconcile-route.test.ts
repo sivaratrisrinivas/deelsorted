@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { JournalRow } from "../../src/types/reconcile";
 
 function loadFixture(name: string): string {
   return readFileSync(join(process.cwd(), "fixtures", name), "utf8");
@@ -139,10 +140,20 @@ describe("POST /api/reconcile", () => {
 
     const response = await POST(createRouteRequest());
     const body = (await response.json()) as {
-      reconciledLines: Array<{ status: string }>;
+      reconciledLines: Array<{
+        lineId: string;
+        sourceRef: string;
+        normalizedCode: string;
+        currency: string;
+        status: string;
+      }>;
       anomalies: Array<{ lineId: string }>;
-      journalRows: Array<{ currency: string }>;
-      auditTrailRows: Array<{ lineId: string }>;
+      journalRows: JournalRow[];
+      auditTrailRows: Array<{
+        lineId: string;
+        sourceRef: string;
+        normalizedCode: string;
+      }>;
     };
 
     expect(response.status).toBe(200);
@@ -153,6 +164,71 @@ describe("POST /api/reconcile", () => {
     expect(body.anomalies).toHaveLength(0);
     expect(body.auditTrailRows).toHaveLength(8);
     expect(body.journalRows.length).toBeGreaterThan(0);
+    expect(body.reconciledLines).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          lineId: "contract-gb-001:item-1",
+          sourceRef: "contract-gb-001",
+          normalizedCode: "EARNINGS_GROSS_PAY",
+          currency: "GBP",
+        }),
+        expect.objectContaining({
+          lineId: "contract-gb-002:item-1",
+          sourceRef: "contract-gb-002",
+          normalizedCode:
+            "EMPLOYER_COSTS_EMPLOYER_NATIONAL_INSURANCE_TIER_1",
+          currency: "GBP",
+        }),
+        expect.objectContaining({
+          lineId: "contract-de-001:item-2",
+          sourceRef: "contract-de-001",
+          normalizedCode: "DEDUCTIONS_WAGE_TAX",
+          currency: "EUR",
+        }),
+      ]),
+    );
+    expect(body.auditTrailRows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          lineId: "contract-br-001:item-1",
+          sourceRef: "contract-br-001",
+          normalizedCode: "DEDUCTIONS_INSS_EMPLOYEE_CONTRIBUTION",
+        }),
+      ]),
+    );
+    expect(new Set(body.journalRows.map((row) => row.currency))).toEqual(
+      new Set(["GBP", "BRL", "EUR"]),
+    );
+    expectBalancedJournalByCurrency(body.journalRows);
     expect(global.fetch).toHaveBeenCalledTimes(6);
   });
 });
+
+function expectBalancedJournalByCurrency(rows: readonly JournalRow[]): void {
+  const totalsByCurrency = new Map<
+    string,
+    {
+      debit: number;
+      credit: number;
+    }
+  >();
+
+  for (const row of rows) {
+    const totals = totalsByCurrency.get(row.currency) ?? {
+      debit: 0,
+      credit: 0,
+    };
+
+    if (row.side === "debit") {
+      totals.debit += row.amount;
+    } else {
+      totals.credit += row.amount;
+    }
+
+    totalsByCurrency.set(row.currency, totals);
+  }
+
+  for (const totals of totalsByCurrency.values()) {
+    expect(Math.abs(totals.debit - totals.credit)).toBeLessThanOrEqual(0.01);
+  }
+}
