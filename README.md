@@ -1,6 +1,14 @@
 # DeelSorted
 
-DeelSorted is a demo-first payroll reconciliation app. It takes a messy payroll export from Deel, matches each line to the right general ledger account from a company's chart of accounts, and turns the result into a clean journal entry that finance can review and export.
+DeelSorted is a demo-first payroll reconciliation app. It accepts a supported Deel G2N payroll JSON file and a supported chart of accounts CSV, matches each payroll concept to the right GL account, and turns the result into a clean journal entry that finance can review and export.
+
+## At a glance
+
+- payroll input today is one supported Deel G2N-style JSON shape
+- COA input today is one supported CSV family with canonical headers or curated header aliases
+- AI is only used for semantic mapping from payroll concepts to GL account candidates
+- journal math, balancing, anomaly handling, and CSV exports stay deterministic
+- approved mappings are only reused after explicit human approval
 
 ## What it does
 
@@ -46,6 +54,31 @@ The first demo is intentionally narrow.
 8. The user downloads a journal CSV and an audit trail CSV.
 9. Approved mapping decisions can be reused later.
 
+## Supported inputs
+
+### Payroll JSON
+
+Supported today:
+
+- official-shape Deel Global Payroll Gross-to-Net response bodies
+- schema-faithful mock G2N JSON files used for demo verification
+
+Rejected today:
+
+- arbitrary payroll JSON arrays
+- unknown contract wrappers
+- generic HR or finance datasets
+- the preserved legacy payroll fixture as a live upload path
+
+### COA CSV
+
+Supported today:
+
+- CSV files with the canonical demo header row
+- CSV files that use the curated alias set documented in `fixtures/README.md`
+
+The current runtime does not support arbitrary CSV inference or COA JSON uploads.
+
 ## Why the design is trustworthy
 
 AI is only used for the mapping decision.
@@ -58,6 +91,14 @@ The rest stays deterministic:
 - debit and credit balancing
 - CSV generation
 - anomaly handling
+- approved-memory reuse rules
+
+Other boundaries that matter:
+
+- unsupported or uncertain cases should be quarantined as anomalies, not forced through
+- only explicit human-approved mappings may be reused later
+- the current runtime supports the schema-faithful Deel G2N payroll shape and one COA CSV family with curated header aliases
+- the app is local-facing but not fully offline because Gemini runs server-side
 
 That split matters. The language problem is where AI helps. The accounting math stays under application control.
 
@@ -118,6 +159,8 @@ npm install
 npm run dev
 ```
 
+Then open `http://localhost:3000` in your browser.
+
 Before running the Gemini-backed flow locally, create `.env.local` in the repo root with either:
 
 ```bash
@@ -145,7 +188,9 @@ Fixture field details are documented in `fixtures/README.md`.
 Useful commands:
 
 - `npm run dev` starts the app
+- `npm run dev:turbopack` starts the app with Turbopack
 - `npm run build` creates a production build
+- `npm run start` runs the production server
 - `npm run lint` checks the code style rules through the WSL-safe runner in `scripts/run-eslint.mjs`
 - `npm run typecheck` checks TypeScript
 - `npm run test` runs the Vitest suite
@@ -156,8 +201,8 @@ Today the local demo supports this browser-visible slice:
 
 1. Start the app with `npm run dev`.
 2. Open `http://localhost:3000`.
-3. Upload `fixtures/payroll-sample.json`.
-4. Upload `fixtures/coa-sample.csv`.
+3. Upload `fixtures/payroll-sample.json` as the `Deel G2N JSON` file.
+4. Upload `fixtures/coa-sample.csv` or `fixtures/coa-alias-sample.csv`.
 5. Click `Reconcile`.
 6. Review the selected GL account, confidence, journal role, and reasoning for each mapped line.
 7. Review anomalies in a separate panel with a human-readable reason.
@@ -179,6 +224,23 @@ The dedicated G2N plan/spec docs remain in the repo as implementation history an
 
 - `docs/specs/deelsorted-g2n-ingestion-spec.md`
 - `docs/specs/deelsorted-g2n-ingestion-plan.md`
+
+## Repository map
+
+```text
+app/                           -> Next.js routes and pages
+src/features/reconcile/ui/     -> Upload flow, result views, approvals UI
+src/features/reconcile/domain/ -> Pure logic: normalization, journal, export
+src/features/reconcile/server/ -> Orchestration, Gemini adapter, memory, retrieval
+src/lib/parsers/               -> Payroll JSON and COA CSV parsing
+src/lib/env/                   -> Environment validation
+src/types/                     -> Shared types and Zod schemas
+data/                          -> Local approved mapping storage
+fixtures/                      -> Demo payroll and COA fixtures
+tests/unit/                    -> Pure logic tests
+tests/integration/             -> Pipeline and route tests
+docs/                          -> Product, spec, and plan documents
+```
 
 ## Verification snapshot
 

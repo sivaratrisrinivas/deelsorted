@@ -1,0 +1,33 @@
+
+ RUN  v3.2.4 /home/srinivas/workspace/github.com/sivaratrisrinivas/deelsorted
+
+ ❯ tests/integration/reconcile-route.test.ts (1 test | 1 failed) 10785ms
+   × POST /api/reconcile > accepts payroll and COA uploads and returns basic reconcile results 10781ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ✓ tests/integration/gemini-adapter.test.ts (2 tests) 195ms
+ ✓ tests/integration/reconcile-service.test.ts (2 tests) 209ms
+ ✓ tests/integration/approval-flow.test.ts (1 test) 268ms
+ ✓ tests/integration/retrieval-and-memory.test.ts (3 tests) 80ms
+ ❯ tests/integration/error-states.test.ts (5 tests | 1 failed) 309ms
+   ✓ Task 11 error states > returns a clear 400 when an expected upload is missing 70ms
+   ✓ Task 11 error states > returns a clear 400 when payroll JSON is malformed 12ms
+   ✓ Task 11 error states > returns a clear 400 when payroll JSON is valid but unsupported 29ms
+   ✓ Task 11 error states > returns a clear 400 when the COA CSV shape is unsupported 36ms
+   × Task 11 error states > renders explicit empty, loading, and error states 156ms
+     → expected '<div style="margin-top:1rem"><form st…' to contain 'Upload the supported files to begin.'
+ ❯ tests/integration/results-and-downloads.test.ts (1 test | 1 failed) 341ms
+   × ResultsSummary > renders G2N-derived mapped details, anomaly detail, and CSV download links 338ms
+     → expected '<section style="margin-top:2rem;displ…' to contain 'Uploads processed successfully.'
+ ✓ tests/unit/parsers.test.ts (6 tests) 69ms
+ ✓ tests/unit/journal.test.ts (2 tests) 87ms
+ ✓ tests/unit/normalize.test.ts (3 tests) 50ms
+ ✓ tests/unit/export.test.ts (2 tests) 71ms
+ ✓ tests/unit/schemas-and-fixtures.test.ts (3 tests) 45ms
+ ✓ tests/unit/smoke.test.ts (1 test) 9ms
+
+ Test Files  3 failed | 10 passed (13)
+      Tests  3 failed | 29 passed (32)
+   Start at  08:04:09
+   Duration  17.07s (transform 18.96s, setup 341ms, collect 79.66s, tests 12.52s, environment 11ms, prepare 4.61s)
+
