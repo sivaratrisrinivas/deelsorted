@@ -4,7 +4,9 @@ These fixtures are synthetic demo inputs. They are safe to commit and do not con
 
 ## Deel G2N payroll JSON
 
-`payroll-sample.json` is now a schema-faithful mock of the documented Deel G2N response envelope used for the next ingestion slice.
+`payroll-sample.json` is the schema-faithful mock of the documented Deel G2N response envelope used by the current runtime and browser upload flow.
+
+The UI labels this supported payroll upload as `Deel G2N JSON`.
 
 Top-level fields:
 - `data`
@@ -28,11 +30,11 @@ Each `items[]` entry includes:
 - `sub_category`
 - `category_group`
 
-The sample intentionally includes repeated concepts across multiple contracts and currencies so later slices can prove normalization and deduplicated mapping behavior against schema-faithful inputs.
+The sample intentionally includes repeated concepts across multiple contracts and currencies so the current tests can prove normalization and deduplicated mapping behavior against schema-faithful inputs.
 
 ## Legacy payroll JSON
 
-`payroll-legacy-sample.json` preserves the original v1 demo upload shape as a checked-in reference fixture after the runtime parser cutover to G2N.
+`payroll-legacy-sample.json` preserves the original v1 demo upload shape as a checked-in reference fixture after the runtime parser cutover to G2N. It is not a supported upload path in the current app.
 
 ## Supported COA CSV
 

@@ -106,6 +106,7 @@ What is already done:
 - the upload route and browser UI now explicitly label the payroll upload as `Deel G2N JSON`
 - malformed payroll JSON and unsupported payroll schema now produce distinct G2N-specific upload errors
 - the COA parser now accepts a curated alias set for common CSV headers and safely defaults omitted `description` and `aliases` columns
+- the mocked end-to-end G2N follow-up now re-verifies the route, results/downloads, and approval-memory reuse flow against G2N-derived lines
 
 ## How to run the project
 
@@ -169,27 +170,25 @@ The route currently depends on a server-side Gemini API key and returns structur
 
 The checked-in Gemini runtime uses a small server-side Developer API client in `src/features/reconcile/server/runtime.ts` and passes its responses through the schema-validated mapping adapter in `src/features/reconcile/server/gemini.ts`. The approved spec still tracks `@google/genai` as the preferred SDK direction, but that package is not a current repository dependency.
 
-## Next planned ingestion slice
+## G2N ingestion status
 
-The first four G2N ingestion slices are now landed in code: the repo contains explicit Deel G2N schemas, a schema-faithful mock G2N fixture, a live payroll parser that converts G2N items into canonical payroll lines for the existing reconcile engine, upload wording that explicitly labels the supported payroll input as `Deel G2N JSON`, and a COA parser that accepts canonical headers plus a curated alias set with safe defaults for omitted optional columns.
+The planned G2N ingestion follow-up is now landed through its mocked end-to-end verification and doc-sync closeout. The repo now contains explicit Deel G2N schemas, a schema-faithful mock G2N fixture, a live payroll parser that converts G2N items into canonical payroll lines for the existing reconcile engine, upload wording that explicitly labels the supported payroll input as `Deel G2N JSON`, flexible COA CSV alias support, and integration coverage that re-verifies route behavior, results/downloads output, and approval-memory reuse against the G2N-derived flow.
 
-The next implementation slice is the mocked end-to-end follow-up that re-verifies the full G2N upload path against the updated parser assumptions.
-
-That follow-up remains planned in dedicated docs:
+The dedicated G2N plan/spec docs remain in the repo as implementation history and scope reference:
 
 - `docs/specs/deelsorted-g2n-ingestion-spec.md`
 - `docs/specs/deelsorted-g2n-ingestion-plan.md`
 
 ## Verification snapshot
 
-Current verification is recorded from a WSL bash shell in this repository after the COA alias slice landed.
+Current verification is recorded from a WSL bash shell in this repository after the G2N mocked integration and doc-sync closeout slices landed.
 
 - Date: `2026-04-18`
-- `npm run build` passed
 - `npm run lint` passed
 - `npm run typecheck` passed
 - `npm run test` passed with `13` test files and `32` tests green
-- Manual run check: `npm run dev -- --hostname 127.0.0.1 --port 3001` reached a ready Next.js server at `http://127.0.0.1:3001` in `2.7s`
+- `npm run build` passed
+- Manual browser/dev-server check was not re-recorded in this snapshot because the sandbox blocked a local bind on `127.0.0.1:3001` with `listen EPERM`; rerun `npm run dev -- --hostname 127.0.0.1 --port 3001` from a normal WSL shell for the final browser check
 
 ## Planned v1 scope
 
@@ -197,7 +196,7 @@ The first version is meant to be a compelling demo, not a production accounting 
 
 In scope:
 
-- one supported payroll JSON format
+- one supported Deel G2N-style payroll JSON format
 - supported COA CSV uploads with canonical headers or curated header aliases
 - sample payroll data for multiple countries
 - AI-assisted GL mapping

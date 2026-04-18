@@ -8,7 +8,7 @@
 5. The current internal mapping, journal building, anomaly handling, and export flow should remain deterministic.
 6. COA ingestion should become more flexible, but not to the point of claiming support for arbitrary accounting exports without explicit field mapping rules.
 7. Live Deel API integration, worker enrichment calls, and ERP writeback are out of scope for this spec unless explicitly added later.
-8. If we preserve the current repo-invented payroll fixture schema, it should be treated as a legacy compatibility path rather than the product’s primary truth.
+8. The preserved legacy payroll fixture may stay in the repo as reference data, but it should not remain a supported upload path.
 
 ## Objective
 Build a more credible and demo-ready ingestion layer for DeelSorted that:
@@ -23,7 +23,7 @@ Primary user:
 
 Core user flow:
 1. Upload a supported Deel G2N-style JSON file.
-2. Upload a supported COA CSV or COA JSON file.
+2. Upload a supported COA CSV file.
 3. Click `Reconcile`.
 4. The app normalizes payroll lines and account records into its internal models.
 5. Gemini performs semantic account mapping only after structural normalization succeeds.
@@ -84,23 +84,23 @@ These gaps must be handled as missing source information, not invented facts.
 Supported:
 1. Official-shape Deel G2N JSON response bodies
 2. Schema-faithful mock G2N JSON files for demo use
-3. Optional legacy compatibility with the current `payroll-sample.json` shape if we choose to preserve it
 
 Rejected:
 - arbitrary payroll JSON arrays
 - unknown contract wrappers
 - generic HR datasets
-- payroll JSON that does not match one of the explicitly supported schemas
+- legacy demo payroll JSON uploads
+- payroll JSON that does not match the supported Deel G2N schema
 
 ### COA Inputs
 Supported:
 1. CSV files with canonical headers
 2. CSV files with supported header aliases
-3. JSON files containing account arrays in a supported account schema
 
 Rejected:
 - arbitrary CSVs with no recognizable account fields
-- malformed JSON
+- malformed CSV
+- JSON account arrays
 - account datasets missing the minimum fields required to build journal candidates
 
 ## Tech Stack
@@ -124,8 +124,8 @@ Rejected:
 ## Project Structure
 ```text
 app/api/reconcile/route.ts              -> upload validation and parser dispatch
-src/lib/parsers/payroll.ts              -> payroll parser detection and normalization entrypoint
-src/lib/parsers/coa.ts                  -> flexible COA CSV/JSON parsing
+src/lib/parsers/payroll.ts              -> Deel G2N payroll parsing and normalization entrypoint
+src/lib/parsers/coa.ts                  -> flexible COA CSV parsing
 src/types/reconcile.ts                  -> supported upload schemas and normalized internal types
 src/features/reconcile/domain/normalize.ts -> canonical payroll-line construction
 src/features/reconcile/server/retrieval.ts -> candidate scoring against normalized inputs
@@ -138,29 +138,13 @@ docs/specs/                             -> this spec and later implementation pl
 ```
 
 ## Code Style
-Prefer explicit parser dispatch over clever inference. Unsupported shapes should return structured failures quickly.
+Prefer explicit schema validation over clever inference. Unsupported shapes should return structured failures quickly.
 
 ```ts
-type PayrollParseResult =
-  | { kind: "g2n"; lines: PayrollLine[] }
-  | { kind: "legacy-demo"; lines: PayrollLine[] }
-  | { kind: "unsupported"; reason: string };
-
-export function parseUploadedPayrollJson(jsonText: string): PayrollParseResult {
+export function parseUploadedPayrollJson(jsonText: string): PayrollLine[] {
   const parsed = JSON.parse(jsonText);
 
-  if (matchesDeelG2nReport(parsed)) {
-    return { kind: "g2n", lines: parseDeelG2nReport(parsed) };
-  }
-
-  if (matchesLegacyDemoPayroll(parsed)) {
-    return { kind: "legacy-demo", lines: parseLegacyDemoPayroll(parsed) };
-  }
-
-  return {
-    kind: "unsupported",
-    reason: "Upload a Deel G2N-style payroll JSON file or a supported legacy demo fixture.",
-  };
+  return parseDeelG2nReport(parsed);
 }
 ```
 
@@ -181,15 +165,12 @@ Required test layers:
 ### Unit
 - G2N schema validation
 - G2N-to-internal normalization
-- legacy payroll compatibility if retained
 - COA CSV alias parsing
-- COA JSON parsing
 - upload-shape rejection for unsupported payroll JSON
 - preservation of raw source metadata
 
 ### Integration
 - `/api/reconcile` accepts schema-faithful G2N JSON + supported COA CSV
-- `/api/reconcile` accepts schema-faithful G2N JSON + supported COA JSON
 - `/api/reconcile` rejects unsupported payroll JSON with a clear 400
 - end-to-end reconcile flow still produces mapped lines, anomalies, journal rows, and audit rows
 - approved-memory reuse still works after the new normalization path
@@ -209,7 +190,7 @@ Rules:
   - Keep semantic mapping AI-only after structural parsing succeeds.
   - Keep journal building and exports deterministic.
 - Ask first:
-  - Removing the current legacy payroll fixture path entirely.
+  - Deleting the preserved legacy payroll reference fixture from the repo.
   - Adding live Deel API fetching.
   - Adding an interactive import-mapping wizard for arbitrary JSON/CSV.
   - Enriching G2N uploads with additional Deel worker or cycle endpoints.
@@ -225,7 +206,6 @@ Rules:
 - A user can upload a schema-faithful Deel G2N JSON file and reconcile it successfully.
 - A user can upload a schema-faithful mock G2N JSON file and reconcile it successfully.
 - A user can upload a supported COA CSV with canonical headers or supported header aliases.
-- A user can upload a supported COA JSON file if JSON COA support is included in scope.
 - Unsupported payroll JSON returns a clear upload error that distinguishes “valid JSON” from “unsupported schema.”
 - The normalized reconcile pipeline still produces only `mapped` or `anomaly` line states.
 - The journal still balances by currency within `0.01`.

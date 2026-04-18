@@ -3,7 +3,7 @@
 ## Assumptions I'm Making
 1. This is a web application built with Next.js and TypeScript, not a native desktop app.
 2. V1 is a compelling local demo, not a production-grade accounting system or ERP integration.
-3. The first supported inputs are exactly one Deel-style payroll JSON format and one COA CSV format.
+3. The first supported inputs are exactly one Deel G2N-style payroll JSON format and one COA CSV format, with curated CSV header aliases allowed for the COA upload.
 4. The AI-assisted reconciliation runs server-side against Gemini; the UI remains local-facing but not fully offline.
 5. Memory is persisted only from explicit human approvals and stored locally in a file for the demo.
 6. Journal math, debit/credit balancing, and CSV export generation are deterministic and never delegated to AI.
@@ -17,7 +17,7 @@ Primary user:
 - A finance or accounting operator responsible for monthly payroll reconciliation who understands GL accounts but not country-specific payroll tax code jargon.
 
 Core user flow:
-1. Upload a supported payroll JSON fixture.
+1. Upload a supported Deel G2N-style payroll JSON fixture.
 2. Upload a supported COA CSV.
 3. Click `Reconcile`.
 4. Review mapped lines, confidence, and anomalies.
@@ -140,7 +140,7 @@ Rules:
   - Hide unsupported input cases behind silent fallback behavior.
 
 ## Success Criteria
-- A user can upload one supported Deel-style payroll JSON file and one supported COA CSV file in the browser.
+- A user can upload one supported Deel G2N-style payroll JSON file and one supported COA CSV file in the browser.
 - Clicking `Reconcile` produces a result set where every payroll line ends in exactly one of two states: `mapped` or `anomaly`.
 - The result view shows, for every line, the selected GL account, confidence score or band, and short reasoning.
 - The system produces a journal grouped by currency that balances to zero per currency within `0.01`.
