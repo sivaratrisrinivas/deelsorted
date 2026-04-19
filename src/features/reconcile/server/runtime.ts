@@ -5,7 +5,7 @@ import {
   type GeminiMappingEngine,
   type GeminiModelClient,
 } from "./gemini";
-import { createFileApprovalMemory, type ApprovalMemory } from "./memory";
+import { createApprovalMemoryFromEnv, type ApprovalMemory } from "./memory";
 
 export type RuntimeReconcileDependencies = {
   approvalMemory: ApprovalMemory;
@@ -18,7 +18,7 @@ export function createRuntimeReconcileDependencies(): RuntimeReconcileDependenci
   const client = createGeminiDeveloperApiClient(env.geminiApiKey);
 
   return {
-    approvalMemory: createFileApprovalMemory(),
+    approvalMemory: createApprovalMemoryFromEnv(),
     mappingEngine: createGeminiMappingEngine({
       client,
       model: env.geminiModel,

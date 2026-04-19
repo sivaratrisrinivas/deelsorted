@@ -9,7 +9,7 @@ This plan turns the approved DeelSorted v1 spec into a small, ordered set of imp
 - The checkboxes below are the original planning checklist and were not backfilled as earlier slices landed.
 
 ## Architecture Decisions
-- Start with a local retrieval adapter and local approved-mapping persistence instead of turbopuffer so the first end-to-end loop is fast to build and easy to debug.
+- Start with a local retrieval adapter and file-backed approved-mapping persistence for local/dev runs, while keeping storage behind an adapter so deployed Vercel runs can use private Blob storage without rewriting the feature.
 - Keep the reconciliation domain pure and deterministic. Parsing, normalization, journal building, and CSV generation stay outside the UI and outside the Gemini adapter.
 - Use Gemini only behind a server-side mapping interface that accepts candidate accounts and returns a schema-validated decision object.
 - Deduplicate repeated normalized payroll concepts before invoking Gemini, then fan decisions back out to all matching raw lines in the run.
@@ -399,7 +399,7 @@ Project scaffold and toolchain
 | The chosen Deel-style fixture shape differs materially from real export payloads | High | Keep the parser isolated and fixture-backed; validate with a real sample before widening support |
 | Journal balancing rules are under-specified for some payroll concepts | High | Keep `journalRole` explicit in the mapping contract and quarantine ambiguous cases instead of guessing |
 | Gemini output drifts or violates schema | High | Enforce strict schema validation, add mocked tests for failure cases, and treat invalid responses as anomalies |
-| Local file persistence is awkward in some Next.js runtimes | Medium | Keep persistence behind a memory adapter so the storage mechanism can change without rewriting the feature |
+| Local-only persistence is awkward in some Next.js runtimes | Medium | Keep persistence behind a memory adapter so local runs can stay file-backed while deployed Vercel runs switch to private Blob storage |
 | UI work grows too large before the engine is proven | Medium | Hold the major UI slice until the headless reconcile engine is working against fixtures and tests |
 
 ## Parallelization Opportunities

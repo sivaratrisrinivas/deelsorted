@@ -141,14 +141,14 @@ What is already done:
 - the supported payroll JSON and COA CSV fixtures are in the repo
 - parsing, normalization, retrieval, Gemini orchestration, journal building, and audit export helpers are implemented
 - `/api/reconcile` accepts uploaded files and returns structured reconcile results
-- `/api/approvals` persists confirmed mappings to local JSON storage
+- `/api/approvals` persists confirmed mappings to local JSON storage in local/dev runs and to private Vercel Blob storage when deployed on Vercel
 - the home page lets you upload the supported files, review mapped lines, inspect anomalies, download journal and audit trail CSVs, and approve confirmed mappings
 - malformed or unsupported uploads fail with clear recoverable error messages instead of leaving the UI in an ambiguous state
 - the reconcile form now shows explicit ready, loading, and stopped-safe error states during submission
 - the UI has been completely overhauled with the "Precision Absolute" design system based on Sovereign Functionalism, using a high-contrast, low-cognitive-load laboratory-white aesthetic with 0px border radiuses, tonal background shifts instead of visible borders, and strict monospaced numeric data
 - the results UI shows selected GL account, confidence, reasoning, and whether a mapping came from the model or approved memory
 - approving a mapped line stores it for future reruns of the same normalized concept
-- integration tests cover the results rendering, local approval persistence, approved-memory reuse flow, and invalid upload error states
+- integration tests cover the results rendering, file-backed and blob-backed approval persistence, approved-memory reuse flow, and invalid upload error states
 - the app builds and serves locally in WSL
 - the workspace-root warning from the unrelated WSL `pnpm-lock.yaml` is handled in `next.config.ts`
 - the repo now includes explicit Deel G2N schemas plus a schema-faithful mock G2N fixture
@@ -183,6 +183,21 @@ or:
 GOOGLE_API_KEY=your_key_here
 ```
 
+Local development defaults to file-backed approval memory in `data/approved-mappings.json`.
+
+If you want to exercise the deployed storage path locally as well, add:
+
+```bash
+BLOB_READ_WRITE_TOKEN=your_blob_token_here
+DEELSORTED_APPROVAL_STORAGE=blob
+```
+
+Optional:
+
+```bash
+DEELSORTED_APPROVALS_BLOB_PATH=deelsorted/approved-mappings.json
+```
+
 Demo fixtures live at:
 
 - `fixtures/payroll-sample.json`
@@ -214,6 +229,26 @@ Useful commands:
 - `npm run lint` checks the code style rules through the WSL-safe runner in `scripts/run-eslint.mjs`
 - `npm run typecheck` checks TypeScript
 - `npm run test` runs the Vitest suite
+
+## Vercel deployment
+
+The app is now Vercel-friendly.
+
+To deploy the full browser flow on Vercel:
+
+1. Create a Vercel project for this repo.
+2. Set `GEMINI_API_KEY` or `GOOGLE_API_KEY`.
+3. Create a private Vercel Blob store and connect it to the same project so `BLOB_READ_WRITE_TOKEN` is injected automatically.
+4. Deploy normally.
+
+Behavior by environment:
+
+- local/dev runs default to `data/approved-mappings.json`
+- Vercel deployments default to private Blob-backed approval memory
+- `DEELSORTED_APPROVAL_STORAGE=file|blob` can override the default if you need to force one mode
+- `DEELSORTED_APPROVALS_BLOB_PATH` can override the blob pathname used for the approvals JSON object
+
+The checked-in demo fixtures fit the current demo flow, but very large uploads still need to stay within Vercel Function request-size limits.
 
 ## Current demo flow
 
@@ -265,14 +300,13 @@ docs/                          -> Product, spec, and plan documents
 
 ## Verification snapshot
 
-Current verification is recorded from a WSL bash shell in this repository after the G2N mocked integration and doc-sync closeout slices landed.
+Latest verification for the Vercel-friendly approval-storage slice is recorded from this repository workspace.
 
-- Date: `2026-04-18`
+- Date: `2026-04-19`
 - `npm run lint` passed
 - `npm run typecheck` passed
-- `npm run test` passed with `15` test files and `35` tests green
-- `npm run build` passed
-- Manual browser/dev-server check was not re-recorded in this snapshot because the sandbox blocked a local bind on `127.0.0.1:3001` with `listen EPERM`; rerun `npm run dev -- --hostname 127.0.0.1 --port 3001` from a normal WSL shell for the final browser check
+- `npm run test -- tests/integration/retrieval-and-memory.test.ts tests/integration/approval-flow.test.ts tests/integration/reconcile-route.test.ts` passed
+- `npm run build` could not complete inside the sandbox because `next/font/google` could not reach Google Fonts; that failure was environmental rather than a TypeScript or route-handler packaging error
 
 ## Planned v1 scope
 
@@ -287,7 +321,7 @@ In scope:
 - confidence scores and anomaly handling
 - balanced journal output by currency
 - downloadable CSV outputs
-- local reuse of approved mappings
+- reuse of approved mappings across local and deployed runs
 
 Out of scope for v1:
 

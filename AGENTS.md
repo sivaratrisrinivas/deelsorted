@@ -45,7 +45,7 @@ For the next-phase ingestion follow-up, also read:
 - `@google/genai`
 - Vitest
 - Papa Parse
-- local JSON file storage for approved mappings in v1
+- local JSON file storage for approved mappings in local/dev runs, with private Vercel Blob storage for deployed Vercel runs
 
 Important:
 - `turbopuffer` is a planned follow-up, not a required dependency for the first demo loop.
@@ -71,6 +71,7 @@ These are the current project commands.
 - The checked-in runtime currently supports the schema-faithful Deel G2N payroll JSON shape and one COA CSV shape.
 - The repo also contains the preserved legacy payroll fixture for reference, but the live parser no longer treats it as the supported upload path.
 - The upload route and UI now use `Deel G2N JSON` wording; keep parser behavior and visible copy aligned when extending the ingestion flow.
+- The checked-in runtime now keeps approved mappings in local JSON during local/dev runs and uses private Vercel Blob storage when deployed on Vercel.
 - Approved mappings are stored per normalized payroll concept, not per raw line.
 - Only explicit human approvals may be reused as memory.
 - Unsupported or uncertain cases should be quarantined as anomalies, not forced through.
@@ -103,7 +104,7 @@ src/features/reconcile/server/ -> Orchestration, Gemini adapter, memory, retriev
 src/lib/parsers/               -> Payroll JSON and COA CSV parsing
 src/lib/env/                   -> Environment validation
 src/types/                     -> Shared types and Zod schemas
-data/                          -> Local approved mapping storage
+data/                          -> Local approved mapping storage for local/dev fallback
 fixtures/                      -> Demo payroll and COA fixtures
 tests/unit/                    -> Pure logic tests
 tests/integration/             -> Pipeline and route tests

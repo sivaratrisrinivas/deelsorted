@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import { createFileApprovalMemory } from "../../../src/features/reconcile/server/memory";
+import { createApprovalMemoryFromEnv } from "../../../src/features/reconcile/server/memory";
 import {
   ApprovalInputSchema,
   ApprovalSchema,
@@ -15,7 +15,7 @@ export async function POST(request: Request): Promise<Response> {
       status: "confirmed",
       approvedAt: createApprovalTimestamp(),
     });
-    const savedApproval = await createFileApprovalMemory().saveApprovedMapping(
+    const savedApproval = await createApprovalMemoryFromEnv().saveApprovedMapping(
       approval,
     );
 

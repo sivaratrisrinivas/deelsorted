@@ -110,7 +110,7 @@ Rejected:
 - CSV parsing: Papa Parse
 - AI mapping: Gemini via the existing server-side client abstraction
 - Tests: Vitest
-- Persistence: local JSON for approved mappings
+- Persistence: local JSON for approved mappings in local/dev runs, with private Vercel Blob storage for deployed Vercel runs
 
 ## Commands
 - Install: `npm install`

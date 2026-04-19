@@ -33,7 +33,7 @@ Success for the demo means the product visibly transforms unfamiliar payroll cod
 - LLM integration: Gemini behind a server-side client abstraction; `@google/genai` remains the planned SDK target, but the current repo uses a thin Developer API client in `src/features/reconcile/server/runtime.ts`
 - Testing: Vitest
 - CSV parsing: Papa Parse
-- Storage for v1 memory: local JSON file in the repository or app data directory
+- Storage for v1 memory: local JSON file in the repository or app data directory for local/dev runs, with private Vercel Blob storage for deployed Vercel runs
 - Retrieval architecture: pluggable interface with a local in-memory adapter first; turbopuffer adapter planned after the first demo loop proves out
 
 ## Commands
@@ -57,7 +57,7 @@ src/features/reconcile/server/ -> Reconcile orchestration, Gemini client, memory
 src/lib/parsers/             -> Deel payroll JSON parser and COA CSV parser
 src/lib/env/                 -> Environment variable validation
 src/types/                   -> Shared TypeScript types and Zod schemas
-data/                        -> Local persisted approved mappings for demo use
+data/                        -> Local persisted approved mappings for local/demo use
 fixtures/                    -> Demo payroll JSON and COA CSV fixtures used by the supported v1 flow
 tests/unit/                  -> Pure function tests for parsers, normalization, journal logic
 tests/integration/           -> Reconcile pipeline tests with mocked Gemini responses
@@ -148,7 +148,7 @@ Rules:
   - journal export
   - audit trail export
 - Repeated instances of the same normalized payroll concept reuse a single mapping decision within a run.
-- At least one human-approved mapping can be persisted locally and reused on a subsequent run.
+- At least one human-approved mapping can be persisted and reused on a subsequent run, whether the runtime is using local file storage or deployed Vercel Blob storage.
 - Unit and integration tests pass using mocked Gemini outputs.
 - `npm run build`, `npm run lint`, `npm run test`, and `npm run typecheck` all pass before implementation is considered complete.
 
