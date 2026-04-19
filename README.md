@@ -58,7 +58,7 @@ The first demo is intentionally narrow.
 8. The user downloads a journal CSV and an audit trail CSV.
 9. Approved mapping decisions can be reused later.
 
-The browser UI also includes a `Use sample files` path that loads the checked-in demo payroll and COA fixtures for a one-click local trial run.
+The browser UI also includes a `Use sample files` path that returns a prewarmed cached demo result for the checked-in `1000`-row payroll sample and matching COA, so the founder/demo flow is instant even though live uploads still run through the normal reconcile pipeline.
 
 ## Supported inputs
 
@@ -84,6 +84,8 @@ Supported today:
 - CSV files that use the curated alias set documented in `fixtures/README.md`
 
 The current runtime does not support arbitrary CSV inference or COA JSON uploads.
+
+For the exact currently supported upload contracts, see [docs/schema_documentation.md](docs/schema_documentation.md).
 
 ## Why the design is trustworthy
 
@@ -155,6 +157,8 @@ What is already done:
 - malformed payroll JSON and unsupported payroll schema now produce distinct G2N-specific upload errors
 - the COA parser now accepts a curated alias set for common CSV headers and safely defaults omitted `description` and `aliases` columns
 - the mocked end-to-end G2N follow-up now re-verifies the route, results/downloads, and approval-memory reuse flow against G2N-derived lines
+- the built-in `Use Samples` path now serves a prewarmed cached result for the checked-in `1000`-row demo fixture instead of waiting on live Gemini calls
+- the upload UI now includes a `Start Over` path that returns the screen to its initial blank state before a user tries their own schema-matching files
 
 ## How to run the project
 
@@ -167,7 +171,7 @@ npm run dev
 
 Then open `http://localhost:3000` in your browser.
 
-Before running the Gemini-backed flow locally, create `.env.local` in the repo root with either:
+Before running live user uploads locally, create `.env.local` in the repo root with either:
 
 ```bash
 GEMINI_API_KEY=your_key_here
@@ -191,6 +195,10 @@ Demo fixtures live at:
 
 `fixtures/payroll-large-sample.json` is a larger schema-faithful Deel G2N mock with `150` contracts and `1200` item lines for load-style demos and parser validation.
 
+`fixtures/payroll-1000-sample.json` is the built-in founder/demo payroll sample used by the `Use Samples` button.
+
+`fixtures/payroll-1000-sample-prewarmed-result.json` is the checked-in cached reconcile result for that same founder/demo sample.
+
 `fixtures/payroll-legacy-sample.json` remains in the repo as a preserved reference fixture, but it is no longer the supported upload path after the parser cutover slice.
 
 `fixtures/coa-large-sample.csv` is the matching broader canonical COA fixture for the larger payroll sample.
@@ -213,16 +221,17 @@ Today the local demo supports this browser-visible slice:
 
 1. Start the app with `npm run dev`.
 2. Open `http://localhost:3000`.
-3. Either click `Use sample files` for the built-in demo path, or upload `fixtures/payroll-sample.json` as the `Deel G2N JSON` file.
+3. Either click `Use sample files` for the built-in instant prewarmed demo path, or upload `fixtures/payroll-sample.json` as the `Deel G2N JSON` file.
 4. If you choose the manual path, upload `fixtures/coa-sample.csv` or `fixtures/coa-alias-sample.csv`.
-5. Run reconciliation.
-6. Review the selected GL account, confidence, journal role, and reasoning for each mapped line.
-7. Review anomalies in a separate panel with a human-readable reason.
-8. Download the journal CSV and audit trail CSV for the completed run.
-9. Approve any mapped line you want to reuse later.
-10. Rerun reconciliation and see reused decisions marked as `Approved memory`.
+5. If you used the sample path and want to try your own files next, click `Start Over` to return the screen to its initial blank upload state.
+6. If you chose the manual path, run reconciliation.
+7. Review the selected GL account, confidence, journal role, and reasoning for each mapped line.
+8. Review anomalies in a separate panel with a human-readable reason.
+9. Download the journal CSV and audit trail CSV for the completed run.
+10. Approve any mapped line you want to reuse later.
+11. Rerun reconciliation and see reused decisions marked as `Approved memory`.
 
-The route currently depends on a server-side Gemini API key and returns structured JSON that the browser renders into the review and export UI. If an upload is missing, malformed, or unsupported, the app now keeps the page usable and shows a clear error state instead of stale results.
+The manual upload route currently depends on a server-side Gemini API key and returns structured JSON that the browser renders into the review and export UI. The built-in sample path now uses the checked-in prewarmed result instead of making live Gemini calls. If an upload is missing, malformed, or unsupported, the app keeps the page usable and shows a clear error state instead of stale results.
 
 ## Current implementation note
 
@@ -261,7 +270,7 @@ Current verification is recorded from a WSL bash shell in this repository after 
 - Date: `2026-04-18`
 - `npm run lint` passed
 - `npm run typecheck` passed
-- `npm run test` passed with `13` test files and `32` tests green
+- `npm run test` passed with `15` test files and `35` tests green
 - `npm run build` passed
 - Manual browser/dev-server check was not re-recorded in this snapshot because the sandbox blocked a local bind on `127.0.0.1:3001` with `listen EPERM`; rerun `npm run dev -- --hostname 127.0.0.1 --port 3001` from a normal WSL shell for the final browser check
 

@@ -138,7 +138,7 @@ describe("Task 11 error states", () => {
     expect(emptyStateHtml).toContain("Deel G2N JSON");
     expect(emptyStateHtml).toContain("Use Samples");
     expect(emptyStateHtml).toContain(
-      "built-in demo fixtures for a one-click sample run",
+      "built-in prewarmed demo run for an instant sample result",
     );
     expect(loadingStateHtml).toContain("Reconciling the ledger...");
     expect(loadingStateHtml).toContain(

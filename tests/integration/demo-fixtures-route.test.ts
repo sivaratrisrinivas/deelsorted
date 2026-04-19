@@ -12,6 +12,12 @@ describe("GET /api/demo-fixtures", () => {
       payrollText: string;
       coaFileName: string;
       coaText: string;
+      prewarmedResult: {
+        reconciledLines: Array<{ status: string; rawLabel: string }>;
+        anomalies: Array<{ rawLabel: string; reasonCode: string }>;
+        journalRows: Array<{ accountCode: string }>;
+        auditTrailRows: Array<{ rawLabel: string }>;
+      };
     };
 
     expect(response.status).toBe(200);
@@ -19,5 +25,28 @@ describe("GET /api/demo-fixtures", () => {
     expect(body.coaFileName).toBe("coa-large-sample.csv");
     expect(parsePayrollJson(body.payrollText)).toHaveLength(1000);
     expect(parseCoaCsv(body.coaText)).toHaveLength(14);
+    expect(body.prewarmedResult.reconciledLines).toHaveLength(1000);
+    expect(body.prewarmedResult.auditTrailRows).toHaveLength(1000);
+    expect(body.prewarmedResult.journalRows.length).toBeGreaterThan(0);
+    expect(body.prewarmedResult.anomalies.length).toBeGreaterThan(0);
+    expect(body.prewarmedResult.reconciledLines).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          rawLabel: "Gross Pay",
+          status: "mapped",
+        }),
+        expect.objectContaining({
+          rawLabel: "Net Salary",
+          status: "mapped",
+        }),
+      ]),
+    );
+    expect(body.prewarmedResult.anomalies).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          reasonCode: expect.any(String),
+        }),
+      ]),
+    );
   });
 });

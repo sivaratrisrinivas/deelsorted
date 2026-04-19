@@ -1,5 +1,16 @@
 [
   {
+    "normalizedCode": "BENEFITS_PRIVATE_HEALTH_INSURANCE",
+    "countryCode": null,
+    "selectedAccountId": "exp-benefits",
+    "journalRole": "expense",
+    "confidenceScore": 0.86,
+    "confidenceBand": "high",
+    "rationale": "Prewarmed demo mapping selected Employee Benefits based on the normalized payroll concept and journal section.",
+    "status": "confirmed",
+    "approvedAt": "2026-04-19T01:09:54Z"
+  },
+  {
     "normalizedCode": "EMPLOYER_COSTS_EMPLOYER_SOCIAL_INSURANCE",
     "countryCode": null,
     "selectedAccountId": "exp-payroll-tax",

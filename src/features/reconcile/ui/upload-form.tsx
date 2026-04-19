@@ -17,6 +17,7 @@ type DemoFixturesResponse = {
   payrollText: string;
   coaFileName: string;
   coaText: string;
+  prewarmedResult: ReconcileResultPayload;
 };
 
 export function UploadForm(): React.JSX.Element {
@@ -24,6 +25,7 @@ export function UploadForm(): React.JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<ReconcileResultPayload | null>(null);
   const [filesReady, setFilesReady] = useState({ payroll: false, coa: false });
+  const [formResetKey, setFormResetKey] = useState(0);
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
@@ -51,22 +53,7 @@ export function UploadForm(): React.JSX.Element {
       }
 
       const sampleFiles = payload as DemoFixturesResponse;
-      const formData = new FormData();
-
-      formData.set(
-        "payrollFile",
-        new File([sampleFiles.payrollText], sampleFiles.payrollFileName, {
-          type: "application/json",
-        }),
-      );
-      formData.set(
-        "coaFile",
-        new File([sampleFiles.coaText], sampleFiles.coaFileName, {
-          type: "text/csv",
-        }),
-      );
-
-      await submitReconciliation(formData);
+      setResult(sampleFiles.prewarmedResult);
     } catch (error) {
       setResult(null);
       setErrorMessage(
@@ -77,11 +64,40 @@ export function UploadForm(): React.JSX.Element {
     }
   }
 
+  function resetToInitialState(): void {
+    setErrorMessage(null);
+    setResult(null);
+    setIsSubmitting(false);
+    setFilesReady({ payroll: false, coa: false });
+    setFormResetKey((current) => current + 1);
+  }
+
+  function handleFileReadyChange(
+    field: "payroll" | "coa",
+    hasFile: boolean,
+  ): void {
+    setErrorMessage(null);
+    setResult(null);
+    setFilesReady((current) => ({
+      ...current,
+      [field]: hasFile,
+    }));
+  }
+
   const allFilesReady = filesReady.payroll && filesReady.coa;
+  const canReset =
+    result !== null ||
+    errorMessage !== null ||
+    filesReady.payroll ||
+    filesReady.coa;
 
   return (
     <div style={{ marginTop: "1rem" }}>
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
+      <form
+        key={formResetKey}
+        onSubmit={handleSubmit}
+        style={{ display: "grid", gap: "1rem" }}
+      >
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
           <div style={{ flex: "1 1 calc(50% - 0.5rem)" }}>
             <UploadField
@@ -89,7 +105,9 @@ export function UploadForm(): React.JSX.Element {
               helperText="Deel G2N JSON"
               label="Payroll Data"
               name="payrollFile"
-              onChange={(e) => setFilesReady(s => ({ ...s, payroll: !!e.target.files?.length }))}
+              onChange={(e) =>
+                handleFileReadyChange("payroll", !!e.target.files?.length)
+              }
               isReady={filesReady.payroll}
             />
           </div>
@@ -99,7 +117,9 @@ export function UploadForm(): React.JSX.Element {
               helperText="Chart of Accounts"
               label="Ledger Map"
               name="coaFile"
-              onChange={(e) => setFilesReady(s => ({ ...s, coa: !!e.target.files?.length }))}
+              onChange={(e) =>
+                handleFileReadyChange("coa", !!e.target.files?.length)
+              }
               isReady={filesReady.coa}
             />
           </div>
@@ -108,13 +128,58 @@ export function UploadForm(): React.JSX.Element {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", padding: "1rem", background: "var(--color-surface-container-lowest)" }}>
           <div>
             <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--color-on-surface-variant)" }}>
-              Requires <code style={{ color: "var(--color-on-surface)", fontFamily: "monospace", opacity: 0.9 }}>GEMINI_API_KEY</code>
+              Live uploads require <code style={{ color: "var(--color-on-surface)", fontFamily: "monospace", opacity: 0.9 }}>GEMINI_API_KEY</code>
             </p>
             <p style={{ margin: "0.45rem 0 0", fontSize: "0.85rem", color: "var(--color-outline)" }}>
-              Or use the built-in demo fixtures for a one-click sample run.
+              Or use the built-in prewarmed demo run for an instant sample result.
             </p>
           </div>
           <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+            {canReset ? (
+              <button
+                disabled={isSubmitting}
+                onClick={resetToInitialState}
+                style={{
+                  border: "1px solid rgba(67, 70, 85, 0.4)",
+                  borderRadius: "0",
+                  padding: "0.85rem 1.5rem",
+                  fontSize: "0.95rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  fontFamily: "var(--font-engine)",
+                  fontWeight: 600,
+                  background: "transparent",
+                  color: isSubmitting
+                    ? "var(--color-outline-variant)"
+                    : "var(--color-on-surface)",
+                  cursor: isSubmitting ? "progress" : "pointer",
+                  transition: "background 0ms",
+                }}
+                type="button"
+                onMouseEnter={(e) => {
+                  if (!isSubmitting) {
+                    e.currentTarget.style.background = "var(--color-surface-container-high)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSubmitting) {
+                    e.currentTarget.style.background = "transparent";
+                  }
+                }}
+                onMouseDown={(e) => {
+                  if (!isSubmitting) {
+                    e.currentTarget.style.background = "var(--color-surface-container-highest)";
+                  }
+                }}
+                onMouseUp={(e) => {
+                  if (!isSubmitting) {
+                    e.currentTarget.style.background = "var(--color-surface-container-high)";
+                  }
+                }}
+              >
+                Start Over
+              </button>
+            ) : null}
             <button
               disabled={isSubmitting}
               onClick={() => {
@@ -307,4 +372,3 @@ function UploadField({
     </label>
   );
 }
-
